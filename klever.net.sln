@@ -1,0 +1,27 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.810.20
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "demo", "demo\demo.csproj", "{3F8DCFD5-BC6F-4FDA-A8DC-93441E5B4209}"
+EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "kleversdk", "kleversdk\kleversdk.shproj", "{0611BC38-01E5-42F5-9406-132B4E63AD90}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|anycpu = Debug|anycpu
+		Release|anycpu = Release|anycpu
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3F8DCFD5-BC6F-4FDA-A8DC-93441E5B4209}.Debug|anycpu.ActiveCfg = Debug|anycpu
+		{3F8DCFD5-BC6F-4FDA-A8DC-93441E5B4209}.Debug|anycpu.Build.0 = Debug|anycpu
+		{3F8DCFD5-BC6F-4FDA-A8DC-93441E5B4209}.Release|anycpu.ActiveCfg = Release|anycpu
+		{3F8DCFD5-BC6F-4FDA-A8DC-93441E5B4209}.Release|anycpu.Build.0 = Release|anycpu
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {20B74E2F-621D-4B9B-98A0-C3687AF3AEF6}
+	EndGlobalSection
+EndGlobal
