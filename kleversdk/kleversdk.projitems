@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
+    <HasSharedItems>true</HasSharedItems>
+    <SharedGUID>{0611BC38-01E5-42F5-9406-132B4E63AD90}</SharedGUID>
+  </PropertyGroup>
+  <PropertyGroup Label="Configuration">
+    <Import_RootNamespace>kleversdk</Import_RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)provider\KleverProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)provider\IKleverProvider.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)provider\NetworkConfig.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)provider\Dto\APIResponseDto.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)provider\Dto\AccountDto.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)provider\Exceptions\APIException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)provider\Helper\JsonSerializerWrapper.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)provider\Dto\AssetDto.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)provider\" />
+    <Folder Include="$(MSBuildThisFileDirectory)provider\Dto\" />
+    <Folder Include="$(MSBuildThisFileDirectory)provider\Helper\" />
+  </ItemGroup>
+</Project>
