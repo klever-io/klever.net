@@ -16,7 +16,7 @@ namespace kleversdk.provider.Dto
         public long Nonce { get; set; }
         public string Username { get; set; }
         public string RootHash { get; set; }
-        public string Balance { get; set; }
+        public long Balance { get; set; }
         public long FrozenBalance { get; set; }
         public long Allowance { get; set; }
 
