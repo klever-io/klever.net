@@ -17,10 +17,33 @@
     <Compile Include="$(MSBuildThisFileDirectory)provider\Exceptions\APIException.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)provider\Helper\JsonSerializerWrapper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)provider\Dto\AssetDto.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)crypto\Bech32.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)core\Wallet.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)core\Account.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)core\Address.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)crypto\Values\BaseBinaryValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)crypto\Values\IBinaryType.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)crypto\Values\TypeValue.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)crypto\Values\FieldDefinition.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)core\Constants.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)crypto\Values\BigEndianBuffer.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)core\Exceptions\AddressException.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)provider\Helper\Converter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)provider\Helper\BytesExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)provider\Helper\StringExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)provider\Dto\ToAmount.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)provider\Dto\KDADataDto.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)provider\Dto\Contracts.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)provider\Exceptions\Errors.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)provider\Dto\TransactionDto.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="$(MSBuildThisFileDirectory)provider\" />
     <Folder Include="$(MSBuildThisFileDirectory)provider\Dto\" />
     <Folder Include="$(MSBuildThisFileDirectory)provider\Helper\" />
+    <Folder Include="$(MSBuildThisFileDirectory)crypto\" />
+    <Folder Include="$(MSBuildThisFileDirectory)core\" />
+    <Folder Include="$(MSBuildThisFileDirectory)crypto\Values\" />
+    <Folder Include="$(MSBuildThisFileDirectory)core\Exceptions\" />
   </ItemGroup>
 </Project>
