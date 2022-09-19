@@ -7,6 +7,5 @@ namespace kleversdk.provider.Exceptions
         : base($"Error when calling API : {errorMessage}: {code}")
         {
         }
-
     }
 }
