@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using kleversdk.core;
 using kleversdk.provider;
@@ -58,6 +59,57 @@ namespace demo
                 return;
             }
 
+            // Create Asset Test
+
+            StakingObject Staking;
+            Staking.apr = 10L;
+            Staking.minEpochsToClaim = 2L;
+            Staking.minEpochsToUnstake = 2L;
+            Staking.minEpochsToWithdraw = 2L;
+            Staking.type = 1;
+
+            var RoyalityInfo = new List<RoyalityInfo>();
+            RoyalityInfo.Add(new RoyalityInfo(amount: 100L, percentage: 100L));
+            RoyalityInfo.Add(new RoyalityInfo(amount: 200L, percentage: 150L));
+
+            Royaltiesobject Royalitys;
+            Royalitys.address = acc.Address.Bech32;
+            Royalitys.marketFixed = 10L;
+            Royalitys.marketPercentage = 1000L;
+            Royalitys.transferFixed = 1000L;
+            Royalitys.transferPercentage = RoyalityInfo;
+
+            var Roles = new List<Role>();
+            Roles.Add(new Role("klv1nkyn8z4pxa88w7q8mdf6r92pjmwtm7e306td0vnsggml345ah3pq2l8z6n", HasRoleMint: true, HasRoleSetITOPrices: false));
+            
+            var Properties = new Propertiesobject();
+            Properties.canAddRoles = true;
+            Properties.canBurn = true;
+            Properties.canChangeOwner = false;
+            Properties.canFreeze = true;
+            Properties.canMint = true;
+            Properties.canPause = true;
+            Properties.canWipe = false;
+
+            var Attributes = new Attributesobject();
+            Attributes.isNFTMintStopped = false;
+            Attributes.isPaused = false;
+
+            var Uris = new List<KeyValuePair<string, string>>();
+            Uris.Add(new KeyValuePair<string, string>("Twitter", "https://twitter.de"));
+            try
+            {
+            var tx = await kp.CreateAsset("TestAsset", "TAS", acc.Address.Bech32, acc.Nonce, 6, Uris, "https://logos/logo1.png", 10000000, 10000000, 0, Staking, Royalitys, Roles, Properties, Attributes);
+            var decoded = await kp.Decode(tx);
+            string signature = wallet.SignHex(decoded.Hash);
+            tx.AddSiganture(signature);
+            var broadcastResult = await kp.Broadcast(tx);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error sending: {0}", e.ToString());
+                return;
+            }
         }
     }
 }
