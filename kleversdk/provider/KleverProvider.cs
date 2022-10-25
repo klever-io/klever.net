@@ -119,7 +119,7 @@ namespace kleversdk.provider
             var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_WithdrawContractType, fromAddr, nonce, list);
             return await PrepareTransaction(data);
         }
-        public async Task<provider.Dto.Transaction> Proposal(string fromAddr, long nonce, List<KeyValuePair<string, string>> parameter, long ePochsDuration, string Description = null)
+        public async Task<provider.Dto.Transaction> Proposal(string fromAddr, long nonce, Dictionary<Int32, string> parameter, long ePochsDuration, string Description = null)
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.ProposalContract(parameter, ePochsDuration, Description));
@@ -133,7 +133,7 @@ namespace kleversdk.provider
             var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_VoteContractType, fromAddr, nonce, list);
             return await PrepareTransaction(data);
         }
-        public async Task<provider.Dto.Transaction> CreateAsset(string name, string ticker, string owner, long nonce, int precision, List<KeyValuePair<string, string>> uris = null, string logo = null, long initialSupply = default, long maxSupply = default, int type = default, provider.Dto.StakingObject staking = default, provider.Dto.Royaltiesobject royalties = default, List<provider.Dto.Role> roles = null, provider.Dto.Propertiesobject properties = default, provider.Dto.Attributesobject attributes = default)
+        public async Task<provider.Dto.Transaction> CreateAsset(string name, string ticker, string owner, long nonce, int precision, Dictionary<string, string> uris = null, string logo = null, long initialSupply = default, long maxSupply = default, int type = default, provider.Dto.StakingObject staking = default, provider.Dto.Royaltiesobject royalties = default, List<provider.Dto.Role> roles = null, provider.Dto.Propertiesobject properties = default, provider.Dto.Attributesobject attributes = default)
         {
             var list = new List<provider.Dto.IContract>();
 
@@ -142,7 +142,7 @@ namespace kleversdk.provider
             return await PrepareTransaction(data);
         }
 
-        public async Task<provider.Dto.Transaction> TriggerAsset(string fromAddr, long nonce, int triggerType, string assetID, string receiver = null, float amount = default, List<KeyValuePair<string, string>> uris = null, string logo = null, string mime = null, provider.Dto.Role role = null, provider.Dto.StakingObject staking = default)
+        public async Task<provider.Dto.Transaction> TriggerAsset(string fromAddr, long nonce, int triggerType, string assetID, string receiver = null, float amount = default, Dictionary<string, string> uris = null, string logo = null, string mime = null, provider.Dto.Role role = null, provider.Dto.StakingObject staking = default)
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.TriggerAssetContract(triggerType, assetID, receiver, amount, uris, logo, mime, role, staking));
@@ -201,7 +201,7 @@ namespace kleversdk.provider
             return await PrepareTransaction(data);
         }
 
-        public async Task<provider.Dto.Transaction> CreateValidator(string fromAddr, long nonce, string name, string address, string rewardAddress, string bls = null, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, List<KeyValuePair<string, string>> uris = null)
+        public async Task<provider.Dto.Transaction> CreateValidator(string fromAddr, long nonce, string name, string address, string rewardAddress, string bls = null, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, Dictionary<string, string> uris = null)
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.CreateValidator(name, address, rewardAddress, bls, canDelegate, maxDelegationAmount, comission, logo, uris));
@@ -209,7 +209,7 @@ namespace kleversdk.provider
             return await PrepareTransaction(data);
         }
 
-        public async Task<provider.Dto.Transaction> ConfigValidator(string fromAddr, long nonce, string name, string rewardAddress, string bls = null, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, List<KeyValuePair<string, string>> uris = null)
+        public async Task<provider.Dto.Transaction> ConfigValidator(string fromAddr, long nonce, string name, string rewardAddress, string bls = null, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, Dictionary<string, string> uris = null)
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.ConfigValidator(name, rewardAddress, bls, canDelegate, maxDelegationAmount, comission, logo, uris));
