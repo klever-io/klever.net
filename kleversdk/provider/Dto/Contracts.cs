@@ -131,14 +131,14 @@ namespace kleversdk.provider.Dto
         }
         public class ProposalContract : IContract
         {
-            public ProposalContract(List<KeyValuePair<string, string>> parameter, long epochsDuration, string description = "")
+            public ProposalContract(Dictionary<Int32, string> parameter, long epochsDuration, string description = "")
             {
                 Parameter = parameter;
                 EpochsDuration = epochsDuration;
                 Description = description;
             }
 
-            public List<KeyValuePair<string, string>> Parameter { get; set; }
+            public Dictionary<Int32, string> Parameter { get; set; }
             public long EpochsDuration { get; set; }
             public string Description { get; set; }
         }
@@ -158,7 +158,7 @@ namespace kleversdk.provider.Dto
         }
     public class CreateAssetContract : IContract
     {
-        public CreateAssetContract(string name, string ticker, string ownerAddress, int precision, List<KeyValuePair<string, string>> uris = null, string logo = "", long initialSupply = default, long maxSupply = default, int type = default, StakingObject staking = default, Royaltiesobject royalties = default, List<Role> roles = null, Propertiesobject properties = default, Attributesobject attributes = default)
+        public CreateAssetContract(string name, string ticker, string ownerAddress, int precision, Dictionary<string, string> uris = null, string logo = "", long initialSupply = default, long maxSupply = default, int type = default, StakingObject staking = default, Royaltiesobject royalties = default, List<Role> roles = null, Propertiesobject properties = default, Attributesobject attributes = default)
         {
             Name = name;
             Ticker = ticker;
@@ -180,7 +180,7 @@ namespace kleversdk.provider.Dto
         public string Ticker { get; set; }
         public string ownerAddress { get; set; }
         public int precision { get; set; }
-        public List<KeyValuePair<string, string>> Uris { get; set; }
+        public Dictionary<string, string> Uris { get; set; }
         public string logo { get; set; }
         public long initialSupply { get; set; }
         public long maxSupply { get; set; }
@@ -243,7 +243,7 @@ namespace kleversdk.provider.Dto
 
         public class TriggerAssetContract : IContract
         {
-            public TriggerAssetContract(int triggerType, string assetID, string receiver = null, float amount = default, List<KeyValuePair<string, string>> uris = null, string logo = null, string mime = null, Role role = null, StakingObject staking = default)
+            public TriggerAssetContract(int triggerType, string assetID, string receiver = null, float amount = default, Dictionary<string, string> uris = null, string logo = null, string mime = null, Role role = null, StakingObject staking = default)
             {
                 this.triggerType = triggerType;
                 AssetID = assetID;
@@ -260,7 +260,7 @@ namespace kleversdk.provider.Dto
             public string AssetID { get; set; }
             public string Receiver { get; set; }
             public float Amount { get; set; }
-            public List<KeyValuePair<string, string>> Uris { get; set; }
+            public Dictionary<string, string> Uris { get; set; }
             public string Logo { get; set; }
             public string mime { get; set; }
             public Role role { get; set; }
@@ -384,7 +384,7 @@ namespace kleversdk.provider.Dto
         }
         public class CreateValidator : IContract
         {
-            public CreateValidator(string name, string address, string rewardAddress, string bls = null, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, List<KeyValuePair<string, string>> uris = null)
+            public CreateValidator(string name, string address, string rewardAddress, string bls = null, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, Dictionary<string, string> uris = null)
             {
                 this.name = name;
                 this.address = address;
@@ -404,12 +404,12 @@ namespace kleversdk.provider.Dto
             public float maxDelegationAmount { get; set; }
             public float comission { get; set; }
             public string logo { get; set; }
-            public List<KeyValuePair<string, string>> uris { get; set; }
+            public Dictionary<string, string> uris { get; set; }
 
         }
         public class ConfigValidator : IContract
         {
-            public ConfigValidator(string name, string rewardAddress, string bls = null, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, List<KeyValuePair<string, string>> uris = null)
+            public ConfigValidator(string name, string rewardAddress, string bls = null, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, Dictionary<string, string> uris = null)
             {
                 this.name = name;
                 this.rewardAddress = rewardAddress;
@@ -427,7 +427,7 @@ namespace kleversdk.provider.Dto
             public float maxDelegationAmount { get; set; }
             public float comission { get; set; }
             public string logo { get; set; }
-            public List<KeyValuePair<string, string>> uris { get; set; }
+            public Dictionary<string, string> uris { get; set; }
 
         }
 

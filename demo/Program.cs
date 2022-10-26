@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 using kleversdk.core;
 using kleversdk.provider;
 using kleversdk.provider.Dto;
@@ -13,7 +13,7 @@ namespace demo
         {
             
 
-            var kp = new KleverProvider(new NetworkConfig(Network.MainNet));
+            var kp = new KleverProvider(new NetworkConfig(Network.TestNet));
             Task<AccountDto> t = kp.GetAccount("klv1usdnywjhrlv4tcyu6stxpl6yvhplg35nepljlt4y5r7yppe8er4qujlazy");
             t.Wait();
             var result = t.Result;
@@ -24,7 +24,7 @@ namespace demo
             // create wallet with private key
             //var wallet = new Wallet("HEX PRIVATE KEY");
             // Mnemonic
-            var mnemonic = "word1 word2 ....";
+var mnemonic = "word1 word2 ....";
             var wallet = Wallet.DeriveFromMnemonic(mnemonic);
             var acc = wallet.GetAccount();
             var wallet2 = Wallet.DeriveFromMnemonic(mnemonic, 1);
@@ -36,7 +36,7 @@ namespace demo
             }
             catch(Exception e)
             {
-                Console.WriteLine("account does no exsist in blockchain yet: {0}", e.ToString());
+                Console.WriteLine("account does no exist in blockchain yet: {0}", e.ToString());
                 return;
             }
 
@@ -47,7 +47,7 @@ namespace demo
                 var tx = await kp.Send(acc.Address.Bech32, acc.Nonce, acc2.Address.Bech32, 100);
                 var decoded = await kp.Decode(tx);
                 var signature = wallet.SignHex(decoded.Hash);
-                tx.AddSiganture(signature);
+                tx.AddSignature(signature);
 
                 // broadcast
                 var broadcastResult = await kp.Broadcast(tx);
@@ -62,7 +62,7 @@ namespace demo
             // Create Asset Test
 
             StakingObject Staking;
-            Staking.apr = 10L;
+            Staking.apr = 1000L; // APR has 2 decimals precision use 1000L for 10%
             Staking.minEpochsToClaim = 2L;
             Staking.minEpochsToUnstake = 2L;
             Staking.minEpochsToWithdraw = 2L;
@@ -72,10 +72,11 @@ namespace demo
             RoyalityInfo.Add(new RoyalityInfo(amount: 100L, percentage: 100L));
             RoyalityInfo.Add(new RoyalityInfo(amount: 200L, percentage: 150L));
 
-            Royaltiesobject Royalitys;
+            Royaltiesobject Royalitys = new Royaltiesobject();
             Royalitys.address = acc.Address.Bech32;
-            Royalitys.marketFixed = 10L;
-            Royalitys.marketPercentage = 1000L;
+            // MarketFixed and MarketPercentage can only be used for NFTs
+            //Royalitys.marketFixed = 10L; 
+            //Royalitys.marketPercentage = 10L;
             Royalitys.transferFixed = 1000L;
             Royalitys.transferPercentage = RoyalityInfo;
 
@@ -95,15 +96,16 @@ namespace demo
             Attributes.isNFTMintStopped = false;
             Attributes.isPaused = false;
 
-            var Uris = new List<KeyValuePair<string, string>>();
-            Uris.Add(new KeyValuePair<string, string>("Twitter", "https://twitter.de"));
+            var Uris = new Dictionary<string, string>();
+            Uris.Add("Twitter", "https://twitter.de");
             try
             {
-            var tx = await kp.CreateAsset("TestAsset", "TAS", acc.Address.Bech32, acc.Nonce, 6, Uris, "https://logos/logo1.png", 10000000, 10000000, 0, Staking, Royalitys, Roles, Properties, Attributes);
-            var decoded = await kp.Decode(tx);
-            string signature = wallet.SignHex(decoded.Hash);
-            tx.AddSiganture(signature);
-            var broadcastResult = await kp.Broadcast(tx);
+                var tx = await kp.CreateAsset("TestAsset", "TAS", acc.Address.Bech32, acc.Nonce, 6, Uris, "https://logos/logo1.png", 10000000, 10000000, 0, Staking, Royalitys, Roles, Properties, Attributes);
+                var decoded = await kp.Decode(tx);
+                string signature = wallet.SignHex(decoded.Hash);
+                tx.AddSignature(signature);
+                var broadcastResult = await kp.Broadcast(tx);
+                Console.WriteLine("Broadcast result: {0}", broadcastResult.String());
             }
             catch (Exception e)
             {
