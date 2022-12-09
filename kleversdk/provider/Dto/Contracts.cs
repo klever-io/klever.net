@@ -384,12 +384,12 @@ namespace kleversdk.provider.Dto
         }
         public class CreateValidator : IContract
         {
-            public CreateValidator(string name, string address, string rewardAddress, string bls = null, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, Dictionary<string, string> uris = null)
+            public CreateValidator(string name, string address, string rewardAddress, string blsPublicKey, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, Dictionary<string, string> uris = null)
             {
                 this.name = name;
                 this.address = address;
                 this.rewardAddress = rewardAddress;
-                this.bls = bls;
+                this.blsPublicKey = blsPublicKey;
                 this.canDelegate = canDelegate;
                 this.maxDelegationAmount = maxDelegationAmount;
                 this.comission = comission;
@@ -399,7 +399,7 @@ namespace kleversdk.provider.Dto
             public string name { get; set; }
             public string address { get; set; }
             public string rewardAddress { get; set; }
-            public string bls { get; set; }
+            public string blsPublicKey { get; set; }
             public bool canDelegate { get; set; }
             public float maxDelegationAmount { get; set; }
             public float comission { get; set; }

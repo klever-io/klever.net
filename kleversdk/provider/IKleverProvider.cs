@@ -20,6 +20,7 @@ namespace kleversdk.provider
         Task<provider.Dto.Transaction> Freeze(string fromAddr, long nonce, float Amount, string kda = "KLV");
         Task<provider.Dto.Transaction> Unfreeze(string fromAddr, long nonce, string BucketID, string kda = "KLV");
         Task<provider.Dto.Transaction> DelegateValidator(string fromAddr, long nonce, string receiver, string BucketID);
+        Task<provider.Dto.Transaction> UndelegateValidator(string fromAddr, long nonce, string BucketID);    
         Task<provider.Dto.Transaction> Withdraw(string fromAddr, long nonce, string kda);
         Task<provider.Dto.Transaction> Proposal(string fromAddr, long nonce, Dictionary<Int32, string> Parameter, long epochsDuration, string Description = null);
         Task<provider.Dto.Transaction> Vote(string fromAddr, long nonce, float amount, long proposalID, int type);
@@ -32,7 +33,7 @@ namespace kleversdk.provider
         Task<provider.Dto.Transaction> Sell(string fromAddr, long nonce, int marketType, string marketplaceId, float assetId, string currencyId, float endTime, float price = default, float reservePrice = default);
         Task<provider.Dto.Transaction> Buy(string fromAddr, long nonce, int buyType, string id, string currencyId, float amount);
         Task<provider.Dto.Transaction> CancelMarketOrder(string fromAddr, long nonce, string orderId);
-        Task<provider.Dto.Transaction> CreateValidator(string fromAddr, long nonce, string name, string address, string rewardAddress, string bls = null, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, Dictionary<string, string> uris = null);
+        Task<provider.Dto.Transaction> CreateValidator(string fromAddr, long nonce, string name, string address, string rewardAddress, string blsPublicKey, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, Dictionary<string, string> uris = null);
         Task<provider.Dto.Transaction> ConfigValidator(string fromAddr, long nonce, string name, string rewardAddress, string bls = null, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, Dictionary<string, string> uris = null);
         Task<provider.Dto.Transaction> Unjail(string fromAddr, long nonce);
         Task<provider.Dto.Transaction> SetAccountName(string fromAddr, long nonce, string name);

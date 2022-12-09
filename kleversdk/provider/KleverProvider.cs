@@ -112,6 +112,13 @@ namespace kleversdk.provider
             var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_DelegateContractType, fromAddr, nonce, list);
             return await PrepareTransaction(data);
         }
+        public async Task<provider.Dto.Transaction> UndelegateValidator(string fromAddr, long nonce, string BucketID)
+        {
+            List<IContract> list = new List<IContract>();
+            list.Add(new UndelegateContract(BucketID));
+            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_UndelegateContractType, fromAddr, nonce, list);
+            return await this.PrepareTransaction(data);
+        }
         public async Task<provider.Dto.Transaction> Withdraw(string fromAddr, long nonce, string kda)
         {
             var list = new List<provider.Dto.IContract>();
@@ -201,10 +208,10 @@ namespace kleversdk.provider
             return await PrepareTransaction(data);
         }
 
-        public async Task<provider.Dto.Transaction> CreateValidator(string fromAddr, long nonce, string name, string address, string rewardAddress, string bls = null, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, Dictionary<string, string> uris = null)
+        public async Task<provider.Dto.Transaction> CreateValidator(string fromAddr, long nonce, string name, string address, string rewardAddress, string blsPublicKey, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, Dictionary<string, string> uris = null)
         {
             var list = new List<provider.Dto.IContract>();
-            list.Add(new provider.Dto.CreateValidator(name, address, rewardAddress, bls, canDelegate, maxDelegationAmount, comission, logo, uris));
+            list.Add(new provider.Dto.CreateValidator(name, address, rewardAddress, blsPublicKey, canDelegate, maxDelegationAmount, comission, logo, uris));
             var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_CreateValidatorContractType, fromAddr, nonce, list);
             return await PrepareTransaction(data);
         }
