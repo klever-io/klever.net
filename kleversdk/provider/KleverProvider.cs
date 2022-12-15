@@ -216,10 +216,10 @@ namespace kleversdk.provider
             return await PrepareTransaction(data);
         }
 
-        public async Task<provider.Dto.Transaction> ConfigValidator(string fromAddr, long nonce, string name, string rewardAddress, string bls = null, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, Dictionary<string, string> uris = null)
+        public async Task<provider.Dto.Transaction> ConfigValidator(string fromAddr, long nonce, string name, string rewardAddress, string blsPublicKey = null, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, Dictionary<string, string> uris = null)
         {
             var list = new List<provider.Dto.IContract>();
-            list.Add(new provider.Dto.ConfigValidator(name, rewardAddress, bls, canDelegate, maxDelegationAmount, comission, logo, uris));
+            list.Add(new provider.Dto.ConfigValidator(name, rewardAddress, blsPublicKey, canDelegate, maxDelegationAmount, comission, logo, uris));
             var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_ValidatorConfigContractType, fromAddr, nonce, list);
             return await PrepareTransaction(data);
         }

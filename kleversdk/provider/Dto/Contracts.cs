@@ -409,11 +409,11 @@ namespace kleversdk.provider.Dto
         }
         public class ConfigValidator : IContract
         {
-            public ConfigValidator(string name, string rewardAddress, string bls = null, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, Dictionary<string, string> uris = null)
+            public ConfigValidator(string name, string rewardAddress, string blsPublicKey = null, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, Dictionary<string, string> uris = null)
             {
                 this.name = name;
                 this.rewardAddress = rewardAddress;
-                this.bls = bls;
+                this.blsPublicKey = blsPublicKey;
                 this.canDelegate = canDelegate;
                 this.maxDelegationAmount = maxDelegationAmount;
                 this.comission = comission;
@@ -422,7 +422,7 @@ namespace kleversdk.provider.Dto
             }
             public string name { get; set; }
             public string rewardAddress { get; set; }
-            public string bls { get; set; }
+            public string blsPublicKey { get; set; }
             public bool canDelegate { get; set; }
             public float maxDelegationAmount { get; set; }
             public float comission { get; set; }
