@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using kleversdk.provider.Dto;
 
@@ -15,6 +16,28 @@ namespace kleversdk.provider
         Task<KDADto> GetAsset(string assetID);
         Task<TransactionAPI> Decode(Transaction tx);
         Task<Transaction> Send(string fromAddr, long nonce, string toAddr, float amount, string kda = "KLV");
+        Task<provider.Dto.Transaction> Claim(string fromAddr, long nonce, int claimType, string id = "KLV");
+        Task<provider.Dto.Transaction> Freeze(string fromAddr, long nonce, float Amount, string kda = "KLV");
+        Task<provider.Dto.Transaction> Unfreeze(string fromAddr, long nonce, string BucketID, string kda = "KLV");
+        Task<provider.Dto.Transaction> DelegateValidator(string fromAddr, long nonce, string receiver, string BucketID);
+        Task<provider.Dto.Transaction> UndelegateValidator(string fromAddr, long nonce, string BucketID);    
+        Task<provider.Dto.Transaction> Withdraw(string fromAddr, long nonce, string kda);
+        Task<provider.Dto.Transaction> Proposal(string fromAddr, long nonce, Dictionary<Int32, string> Parameter, long epochsDuration, string Description = null);
+        Task<provider.Dto.Transaction> Vote(string fromAddr, long nonce, float amount, long proposalID, int type);
+        Task<provider.Dto.Transaction> CreateAsset(string name, string ticker, string owner, long nonce, int precision, Dictionary<string, string> Uris = null, string logo = null, long initialSupply = default, long maxSupply = default, int type = default, provider.Dto.StakingObject staking = default, provider.Dto.Royaltiesobject royalties = default, System.Collections.Generic.List<provider.Dto.Role> roles = null, provider.Dto.Propertiesobject properties = default, provider.Dto.Attributesobject attributes = default);
+        Task<provider.Dto.Transaction> TriggerAsset(string fromAddr, long nonce, int triggerType, string assetID, string receiver = null, float amount = default, Dictionary<string, string> uris = null, string logo = null, string mime = null, provider.Dto.Role role = null, provider.Dto.StakingObject staking = default);
+        Task<provider.Dto.Transaction> ConfigITO(string fromAddr, long nonce, string receiverAddress, string kda, float maxAmount, int status, provider.Dto.packInfo packInfo);
+        Task<provider.Dto.Transaction> SetITOPrices(string fromAddr, long nonce, string kda, provider.Dto.packInfo packInfo);
+        Task<provider.Dto.Transaction> CreateMarketplace(string fromAddr, long nonce, string kda, string name, string referralAddress = null, float referralPercentage = default);
+        Task<provider.Dto.Transaction> ConfigMarketplace(string fromAddr, long nonce, string kda, string name, string marketID, float referralPercentage, string referralAddress = null);
+        Task<provider.Dto.Transaction> Sell(string fromAddr, long nonce, int marketType, string marketplaceId, float assetId, string currencyId, float endTime, float price = default, float reservePrice = default);
+        Task<provider.Dto.Transaction> Buy(string fromAddr, long nonce, int buyType, string id, string currencyId, float amount);
+        Task<provider.Dto.Transaction> CancelMarketOrder(string fromAddr, long nonce, string orderId);
+        Task<provider.Dto.Transaction> CreateValidator(string fromAddr, long nonce, string name, string address, string rewardAddress, string blsPublicKey, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, Dictionary<string, string> uris = null);
+        Task<provider.Dto.Transaction> ConfigValidator(string fromAddr, long nonce, string name, string rewardAddress, string blsPublicKey = null, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, Dictionary<string, string> uris = null);
+        Task<provider.Dto.Transaction> Unjail(string fromAddr, long nonce);
+        Task<provider.Dto.Transaction> SetAccountName(string fromAddr, long nonce, string name);
+        Task<provider.Dto.Transaction> UpdateAccountPermission(string fromAddr, long nonce, List<provider.Dto.AccPermission> permission);
         Task<BroadcastResult> Broadcast(Transaction tx);
     }
 }

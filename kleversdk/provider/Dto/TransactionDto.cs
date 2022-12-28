@@ -101,12 +101,12 @@ namespace kleversdk.provider.Dto
             return JsonSerializerWrapper.Serialize(this);
         }
 
-        public void AddSiganture(byte[] signature)
+        public void AddSignature(byte[] signature)
         {
             Signature.Add(signature);
         }
 
-        public void AddSiganture(string hexData)
+        public void AddSignature(string hexData)
         {
             var signature = Converter.FromHexString(hexData);
             Signature.Add(signature);

@@ -8,6 +8,10 @@ EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "kleversdk", "kleversdk\kleversdk.shproj", "{0611BC38-01E5-42F5-9406-132B4E63AD90}"
 EndProject
 Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		kleversdk\kleversdk.projitems*{0611bc38-01e5-42f5-9406-132b4e63ad90}*SharedItemsImports = 13
+		kleversdk\kleversdk.projitems*{3f8dcfd5-bc6f-4fda-a8dc-93441e5b4209}*SharedItemsImports = 4
+	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|anycpu = Debug|anycpu
 		Release|anycpu = Release|anycpu
