@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk" DefaultTargets="Build" ToolsVersion="4.0">
+  <PropertyGroup>
+    <ProjectGuid>{E03274AD-6CD9-46D7-BBD5-8AC94AE869D7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>kleversdk</RootNamespace>
+    <AssemblyName>kleversdk</AssemblyName>
+    <TargetFramework>net48</TargetFramework>
+    <PackOnBuild>true</PackOnBuild>
+    <PackageId>kleversdk</PackageId>
+    <PackageVersion>0.0.1</PackageVersion>
+    <Authors>Klever</Authors>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Description>Klever.net is a SDK for KleverChain</Description>
+    <PackageProjectUrl>https://github.com/klever-io/klever.net</PackageProjectUrl>
+    <PackageTags>klever;kleverchain;blockchain</PackageTags>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="BouncyCastle.Crypto">
+      <HintPath>..\packages\BouncyCastle.1.8.9\lib\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
+    <Reference Include="dotnetstandard-bip39">
+      <HintPath>..\packages\dotnetstandard-bip39.1.0.2\lib\netstandard2.0\dotnetstandard-bip39.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Web.XmlTransform">
+      <HintPath>..\packages\Microsoft.Web.Xdt.3.0.0\lib\net40\Microsoft.Web.XmlTransform.dll</HintPath>
+    </Reference>
+    <Reference Include="mscorlib" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.Net.Http.WebRequest" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.Build" />
+    <Reference Include="System.ComponentModel.Composition" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- ... -->
+    <PackageReference Include="BouncyCastle" Version="1.8.9" GeneratePathProperty="true" />
+    <PackageReference Include="dotnetstandard-bip39" Version="1.0.2" GeneratePathProperty="true" />
+    <PackageReference Include="Microsoft.CSharp" Version="4.3.0" GeneratePathProperty="true" />
+    <PackageReference Include="Microsoft.Web.Xdt" Version="3.0.0" GeneratePathProperty="true" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.2" GeneratePathProperty="true" />
+    <!-- ... -->
+  </ItemGroup>
+</Project>
