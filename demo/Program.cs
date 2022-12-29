@@ -24,7 +24,7 @@ namespace demo
             // create wallet with private key
             // var wallet = new Wallet("HEX PRIVATE KEY");
             // Mnemonic
-var mnemonic = "word1 word2 ....";
+            var mnemonic = "word1 word2 ....";
             var wallet = Wallet.DeriveFromMnemonic(mnemonic);
             var acc = wallet.GetAccount();
             var wallet2 = Wallet.DeriveFromMnemonic(mnemonic, 1);
