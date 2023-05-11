@@ -72,9 +72,6 @@ namespace kleversdk.provider
             return result.Data.Tx;
         }
 
-            // Encode Message
-
-
 
         public async Task<Transaction> Send(string fromAddr, long nonce, string toAddr, float amount, string kda = "KLV")
         {
