@@ -28,6 +28,17 @@ namespace kleversdk.provider
             }
         }
 
+        private byte[][] EncodeMessage(string message){
+
+            byte[][] encodedMessage = new byte[1][];
+
+            byte[] bytes = System.Text.Encoding.ASCII.GetBytes(message);;
+
+            encodedMessage[0] = bytes;
+
+            return encodedMessage;
+        }
+
         public async Task<AccountDto> GetAccount(string address)
         {
             var response = await _apiClient.GetAsync($"address/{address}");
@@ -69,11 +80,18 @@ namespace kleversdk.provider
             return await this.MultiTransfer(fromAddr, nonce, kda, values);
         }
 
+        public async Task<Transaction> SendWithMessage(string fromAddr, long nonce, string toAddr, float amount,string message, string kda = "KLV")
+        {
+            ToAmount[] values = { new ToAmount(toAddr, amount)};
+
+            return await this.MultiTransfer(fromAddr, nonce, kda, values, message);
+        }
+
         public async Task<provider.Dto.Transaction> Claim(string fromAddr, long nonce, int claimType, string id = "KLV")
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.ClaimContract(claimType, id));
-            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_ClaimContractType, fromAddr, nonce, list);
+            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_ClaimContractType, fromAddr, nonce, list, null);
             return await PrepareTransaction(data);
         }
         public async Task<provider.Dto.Transaction> Freeze(string fromAddr, long nonce, float Amount, string kda = "KLV")
@@ -246,7 +264,7 @@ namespace kleversdk.provider
             return await PrepareTransaction(data);
         }
 
-        public async Task<Transaction> MultiTransfer(string fromAddr, long nonce, string kda, ToAmount[] values)
+        public async Task<Transaction> MultiTransfer(string fromAddr, long nonce, string kda, ToAmount[] values, string message = "")
         {
             long precision = 6;
             bool isNFT = false;
@@ -276,15 +294,18 @@ namespace kleversdk.provider
                 contracts.Add(new TransferContract(to.To, parsedAmount, kda));
             }
 
-            var data = this.BuildRequest(TXContract_ContractType.TXContract_TransferContractType, fromAddr, nonce, contracts);
+
+            var encondedMessage = (byte[][])null;
+            if (message != ""){
+                encondedMessage = EncodeMessage(message);
+            }
+
+            var data = this.BuildRequest(TXContract_ContractType.TXContract_TransferContractType, fromAddr, nonce, contracts,encondedMessage);
 
             return await this.PrepareTransaction(data);
         }
 
-
-
-
-        public SendRequest BuildRequest(TXContract_ContractType cType, string fromAddress, long nonce, List<IContract> contracts)
+        public SendRequest BuildRequest(TXContract_ContractType cType, string fromAddress, long nonce, List<IContract> contracts, byte[][] message = null)
         {
             if (contracts.Count == 0 || contracts.Count > 20)
             {
@@ -297,9 +318,12 @@ namespace kleversdk.provider
                 Sender = fromAddress,
                 Nonce = nonce,
                 //PermID = ,
-                //Data =,
                 Contracts = contracts,
             };
+
+            if (message != null && message.Length > 0){
+                request.Data = message;
+            }
 
             return request;
         }
