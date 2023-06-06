@@ -59,6 +59,28 @@ namespace demo
                 return;
             }
 
+
+            // Send paying with kda
+
+            try {
+            var kdaFee = "kda here";
+            var tx = await kp.Send(acc.Address.Bech32, acc.Nonce, acc2.Address.Bech32, 100, "KLV", kdaFee);
+
+            var decoded = await kp.Decode(tx);
+            var signature = wallet.SignHex(decoded.Hash);
+            tx.AddSignature(signature);
+            Console.WriteLine("tx - Kda Fee: {0}", tx.String());
+            // broadcast
+            var broadcastResult = await kp.Broadcast(tx);
+            Console.WriteLine("Broadcast result - Kda Fee: {0}", broadcastResult.String());
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error sending: {0}", e.ToString());
+                return;
+            }
+
+
             // Create Asset Test
 
             StakingObject Staking;
