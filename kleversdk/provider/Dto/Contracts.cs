@@ -40,6 +40,7 @@ namespace kleversdk.provider.Dto
         public byte[][] Data { get; set; }
         public IContract Contract { get; set; }
         public List<IContract> Contracts { get; set; }
+        public string KdaFee { get; set;}
 
         public string String()
         {

@@ -37,6 +37,11 @@ namespace kleversdk.provider.Dto
         }
     }
 
+    public class KDAFee {
+        public string KDA { get; set; }
+        public long Amount { get; set; }
+    }
+
     public class Transaction_Raw
     {
         public UInt64 Nonce { get; set; }
@@ -48,6 +53,7 @@ namespace kleversdk.provider.Dto
         public Int64 BandwidthFee { get; set; }
         public UInt32 Version { get; set; }
         public byte[] ChainId { get; set; }
+        public KDAFee KDAFee  { get; set;}
     }
 
     public class Receipt

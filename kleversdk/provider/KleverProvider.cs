@@ -73,28 +73,28 @@ namespace kleversdk.provider
         }
 
 
-        public async Task<Transaction> Send(string fromAddr, long nonce, string toAddr, float amount, string kda = "KLV")
+        public async Task<Transaction> Send(string fromAddr, long nonce, string toAddr, float amount, string kda = "KLV", string kdaFee = "")
         {
             ToAmount[] values = { new ToAmount(toAddr, amount)};
 
-            return await this.MultiTransfer(fromAddr, nonce, kda, values);
+            return await this.MultiTransfer(fromAddr, nonce, kda, values, kdaFee);
         }
 
-        public async Task<Transaction> SendWithMessage(string fromAddr, long nonce, string toAddr, float amount,string message, string kda = "KLV")
+        public async Task<Transaction> SendWithMessage(string fromAddr, long nonce, string toAddr, float amount,string message, string kda = "KLV", string kdaFee = "")
         {
             ToAmount[] values = { new ToAmount(toAddr, amount)};
 
-            return await this.MultiTransfer(fromAddr, nonce, kda, values, message);
+            return await this.MultiTransfer(fromAddr, nonce, kda, values, kdaFee, message);
         }
 
-        public async Task<provider.Dto.Transaction> Claim(string fromAddr, long nonce, int claimType, string id = "KLV")
+        public async Task<provider.Dto.Transaction> Claim(string fromAddr, long nonce, int claimType, string id = "KLV", string kdaFee = "")
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.ClaimContract(claimType, id));
-            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_ClaimContractType, fromAddr, nonce, list, null);
+            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_ClaimContractType, fromAddr, nonce, list, null, kdaFee);
             return await PrepareTransaction(data);
         }
-        public async Task<provider.Dto.Transaction> Freeze(string fromAddr, long nonce, float Amount, string kda = "KLV")
+        public async Task<provider.Dto.Transaction> Freeze(string fromAddr, long nonce, float Amount, string kda = "KLV" ,string kdaFee = "")
         {
             long precision = 6L;
             long parsedAmount = Convert.ToInt64(Amount * Math.Pow(10d, precision));
@@ -113,158 +113,158 @@ namespace kleversdk.provider
             }
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.FreezeContract(parsedAmount, kda));
-            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_FreezeContractType, fromAddr, nonce, list);
+            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_FreezeContractType, fromAddr, nonce, list, null, kdaFee);
             return await PrepareTransaction(data);
         }
-        public async Task<provider.Dto.Transaction> Unfreeze(string fromAddr, long nonce, string BucketID, string kda = "KLV")
+        public async Task<provider.Dto.Transaction> Unfreeze(string fromAddr, long nonce, string BucketID, string kda = "KLV", string kdaFee = "")
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.UnfreezeContract(BucketID, kda));
-            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_UnfreezeContractType, fromAddr, nonce, list);
+            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_UnfreezeContractType, fromAddr, nonce, list, null, kdaFee);
             return await PrepareTransaction(data);
         }
-        public async Task<provider.Dto.Transaction> DelegateValidator(string fromAddr, long nonce, string receiver, string BucketID)
+        public async Task<provider.Dto.Transaction> DelegateValidator(string fromAddr, long nonce, string receiver, string BucketID, string kdaFee = "")
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.DelegateContract(receiver, BucketID));
-            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_DelegateContractType, fromAddr, nonce, list);
+            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_DelegateContractType, fromAddr, nonce, list, null, kdaFee);
             return await PrepareTransaction(data);
         }
-        public async Task<provider.Dto.Transaction> UndelegateValidator(string fromAddr, long nonce, string BucketID)
+        public async Task<provider.Dto.Transaction> UndelegateValidator(string fromAddr, long nonce, string BucketID,string kdaFee = "")
         {
             List<IContract> list = new List<IContract>();
             list.Add(new UndelegateContract(BucketID));
-            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_UndelegateContractType, fromAddr, nonce, list);
+            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_UndelegateContractType, fromAddr, nonce, list, null, kdaFee);
             return await this.PrepareTransaction(data);
         }
-        public async Task<provider.Dto.Transaction> Withdraw(string fromAddr, long nonce, string kda)
+        public async Task<provider.Dto.Transaction> Withdraw(string fromAddr, long nonce, string kda,string kdaFee = "")
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.WithdrawContract(kda));
-            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_WithdrawContractType, fromAddr, nonce, list);
+            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_WithdrawContractType, fromAddr, nonce, list, null, kdaFee);
             return await PrepareTransaction(data);
         }
-        public async Task<provider.Dto.Transaction> Proposal(string fromAddr, long nonce, Dictionary<Int32, string> parameter, long ePochsDuration, string Description = null)
+        public async Task<provider.Dto.Transaction> Proposal(string fromAddr, long nonce, Dictionary<Int32, string> parameter, long ePochsDuration, string Description = null, string kdaFee = "")
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.ProposalContract(parameter, ePochsDuration, Description));
-            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_ProposalContractType, fromAddr, nonce, list);
+            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_ProposalContractType, fromAddr, nonce, list, null, kdaFee);
             return await PrepareTransaction(data);
         }
-        public async Task<provider.Dto.Transaction> Vote(string fromAddr, long nonce, float amount, long proposalID, int type)
+        public async Task<provider.Dto.Transaction> Vote(string fromAddr, long nonce, float amount, long proposalID, int type, string kdaFee = "")
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.VoteContract((long)Math.Round(amount), proposalID, type));
-            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_VoteContractType, fromAddr, nonce, list);
+            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_VoteContractType, fromAddr, nonce, list, null, kdaFee);
             return await PrepareTransaction(data);
         }
-        public async Task<provider.Dto.Transaction> CreateAsset(string name, string ticker, string owner, long nonce, int precision, Dictionary<string, string> uris = null, string logo = null, long initialSupply = default, long maxSupply = default, int type = default, provider.Dto.StakingObject staking = default, provider.Dto.Royaltiesobject royalties = default, List<provider.Dto.Role> roles = null, provider.Dto.Propertiesobject properties = default, provider.Dto.Attributesobject attributes = default)
+        public async Task<provider.Dto.Transaction> CreateAsset(string name, string ticker, string owner, long nonce, int precision, Dictionary<string, string> uris = null, string logo = null, long initialSupply = default, long maxSupply = default, int type = default, provider.Dto.StakingObject staking = default, provider.Dto.Royaltiesobject royalties = default, List<provider.Dto.Role> roles = null, provider.Dto.Propertiesobject properties = default, provider.Dto.Attributesobject attributes = default, string kdaFee = "")
         {
             var list = new List<provider.Dto.IContract>();
 
             list.Add(new provider.Dto.CreateAssetContract(name, ticker, owner, precision, uris, logo, initialSupply, maxSupply, type, staking, royalties, roles, properties, attributes));
-            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_CreateAssetContractType, owner, nonce, list);
+            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_CreateAssetContractType, owner, nonce, list, null, kdaFee);
             return await PrepareTransaction(data);
         }
 
-        public async Task<provider.Dto.Transaction> TriggerAsset(string fromAddr, long nonce, int triggerType, string assetID, string receiver = null, float amount = default, Dictionary<string, string> uris = null, string logo = null, string mime = null, provider.Dto.Role role = null, provider.Dto.StakingObject staking = default)
+        public async Task<provider.Dto.Transaction> TriggerAsset(string fromAddr, long nonce, int triggerType, string assetID, string receiver = null, float amount = default, Dictionary<string, string> uris = null, string logo = null, string mime = null, provider.Dto.Role role = null, provider.Dto.StakingObject staking = default, string kdaFee = "")
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.TriggerAssetContract(triggerType, assetID, receiver, amount, uris, logo, mime, role, staking));
-            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_AssetTriggerContractType, fromAddr, nonce, list);
+            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_AssetTriggerContractType, fromAddr, nonce, list, null, kdaFee);
             return await PrepareTransaction(data);
         }
 
-        public async Task<provider.Dto.Transaction> ConfigITO(string fromAddr, long nonce, string receiverAddress, string kda, float maxAmount, int status, provider.Dto.packInfo packInfo)
+        public async Task<provider.Dto.Transaction> ConfigITO(string fromAddr, long nonce, string receiverAddress, string kda, float maxAmount, int status, provider.Dto.packInfo packInfo, string kdaFee = "")
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.ConfigITOContract(receiverAddress, kda, maxAmount, status, packInfo));
-            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_ConfigITOContractType, fromAddr, nonce, list);
+            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_ConfigITOContractType, fromAddr, nonce, list, null, kdaFee);
             return await PrepareTransaction(data);
         }
-        public async Task<provider.Dto.Transaction> SetITOPrices(string fromAddr, long nonce, string kda, provider.Dto.packInfo packInfo)
+        public async Task<provider.Dto.Transaction> SetITOPrices(string fromAddr, long nonce, string kda, provider.Dto.packInfo packInfo, string kdaFee = "")
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.SetITOContract(kda, packInfo));
-            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_SetITOPricesContractType, fromAddr, nonce, list);
+            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_SetITOPricesContractType, fromAddr, nonce, list, null, kdaFee);
             return await PrepareTransaction(data);
         }
-        public async Task<provider.Dto.Transaction> CreateMarketplace(string fromAddr, long nonce, string kda, string name, string referralAddress = null, float referralPercentage = default)
+        public async Task<provider.Dto.Transaction> CreateMarketplace(string fromAddr, long nonce, string kda, string name, string referralAddress = null, float referralPercentage = default, string kdaFee = "")
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.CreateMarketplace(name, referralAddress, referralPercentage));
-            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_CreateMarketplaceContractType, fromAddr, nonce, list);
+            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_CreateMarketplaceContractType, fromAddr, nonce, list, null, kdaFee);
             return await PrepareTransaction(data);
         }
-        public async Task<provider.Dto.Transaction> ConfigMarketplace(string fromAddr, long nonce, string kda, string name, string marketID, float referralPercentage, string referralAddress = null)
+        public async Task<provider.Dto.Transaction> ConfigMarketplace(string fromAddr, long nonce, string kda, string name, string marketID, float referralPercentage, string referralAddress = null, string kdaFee = "")
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.ConfigMarketplace(name, marketID, referralPercentage, referralAddress));
-            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_ConfigMarketplaceContractType, fromAddr, nonce, list);
+            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_ConfigMarketplaceContractType, fromAddr, nonce, list, null, kdaFee);
             return await PrepareTransaction(data);
         }
-        public async Task<provider.Dto.Transaction> Sell(string fromAddr, long nonce, int marketType, string marketplaceId, float assetId, string currencyId, float endTime, float price = default, float reservePrice = default)
+        public async Task<provider.Dto.Transaction> Sell(string fromAddr, long nonce, int marketType, string marketplaceId, float assetId, string currencyId, float endTime, float price = default, float reservePrice = default, string kdaFee = "")
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.Sell(marketType, marketplaceId, assetId, currencyId, endTime, price, reservePrice));
-            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_SellContractType, fromAddr, nonce, list);
+            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_SellContractType, fromAddr, nonce, list, null, kdaFee);
             return await PrepareTransaction(data);
         }
-        public async Task<provider.Dto.Transaction> Buy(string fromAddr, long nonce, int buyType, string id, string currencyId, float amount)
+        public async Task<provider.Dto.Transaction> Buy(string fromAddr, long nonce, int buyType, string id, string currencyId, float amount, string kdaFee = "")
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.Buy(buyType, id, currencyId, amount));
-            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_BuyContractType, fromAddr, nonce, list);
+            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_BuyContractType, fromAddr, nonce, list, null, kdaFee);
             return await PrepareTransaction(data);
         }
 
-        public async Task<provider.Dto.Transaction> CancelMarketOrder(string fromAddr, long nonce, string orderId)
+        public async Task<provider.Dto.Transaction> CancelMarketOrder(string fromAddr, long nonce, string orderId, string kdaFee = "")
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.CancelMarketOrder(orderId));
-            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_CancelMarketOrderContractType, fromAddr, nonce, list);
+            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_CancelMarketOrderContractType, fromAddr, nonce, list, null, kdaFee);
             return await PrepareTransaction(data);
         }
 
-        public async Task<provider.Dto.Transaction> CreateValidator(string fromAddr, long nonce, string name, string address, string rewardAddress, string blsPublicKey, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, Dictionary<string, string> uris = null)
+        public async Task<provider.Dto.Transaction> CreateValidator(string fromAddr, long nonce, string name, string address, string rewardAddress, string blsPublicKey, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, Dictionary<string, string> uris = null, string kdaFee = "")
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.CreateValidator(name, address, rewardAddress, blsPublicKey, canDelegate, maxDelegationAmount, comission, logo, uris));
-            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_CreateValidatorContractType, fromAddr, nonce, list);
+            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_CreateValidatorContractType, fromAddr, nonce, list, null, kdaFee);
             return await PrepareTransaction(data);
         }
 
-        public async Task<provider.Dto.Transaction> ConfigValidator(string fromAddr, long nonce, string name, string rewardAddress, string blsPublicKey = null, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, Dictionary<string, string> uris = null)
+        public async Task<provider.Dto.Transaction> ConfigValidator(string fromAddr, long nonce, string name, string rewardAddress, string blsPublicKey = null, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, Dictionary<string, string> uris = null, string kdaFee = "")
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.ConfigValidator(name, rewardAddress, blsPublicKey, canDelegate, maxDelegationAmount, comission, logo, uris));
-            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_ValidatorConfigContractType, fromAddr, nonce, list);
+            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_ValidatorConfigContractType, fromAddr, nonce, list, null, kdaFee);
             return await PrepareTransaction(data);
         }
 
-        public async Task<provider.Dto.Transaction> Unjail(string fromAddr, long nonce)
+        public async Task<provider.Dto.Transaction> Unjail(string fromAddr, long nonce,string kdaFee = "")
         {
             var list = new List<provider.Dto.IContract>();
-            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_UnjailContractType, fromAddr, nonce, list);
+            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_UnjailContractType, fromAddr, nonce, list, null, kdaFee);
             return await PrepareTransaction(data);
         }
-        public async Task<provider.Dto.Transaction> SetAccountName(string fromAddr, long nonce, string name)
+        public async Task<provider.Dto.Transaction> SetAccountName(string fromAddr, long nonce, string name, string kdaFee = "")
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.SetAccountNameContract(name));
-            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_SetAccountNameContractType, fromAddr, nonce, list);
+            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_SetAccountNameContractType, fromAddr, nonce, list,null, kdaFee);
             return await PrepareTransaction(data);
         }
 
-        public async Task<provider.Dto.Transaction> UpdateAccountPermission(string fromAddr, long nonce, List<provider.Dto.AccPermission> permission)
+        public async Task<provider.Dto.Transaction> UpdateAccountPermission(string fromAddr, long nonce, List<provider.Dto.AccPermission> permission,string kdaFee = "")
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.UpdateAccountPermissionContract(permission));
-            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_UpdateAccountPermissionContractType, fromAddr, nonce, list);
+            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_UpdateAccountPermissionContractType, fromAddr, nonce, list, null, kdaFee);
             return await PrepareTransaction(data);
         }
 
-        public async Task<Transaction> MultiTransfer(string fromAddr, long nonce, string kda, ToAmount[] values, string message = "")
+        public async Task<Transaction> MultiTransfer(string fromAddr, long nonce, string kda, ToAmount[] values,string kdaFee, string message = "")
         {
             long precision = 6;
             bool isNFT = false;
@@ -300,17 +300,19 @@ namespace kleversdk.provider
                 encondedMessage = EncodeMessage(message);
             }
 
-            var data = this.BuildRequest(TXContract_ContractType.TXContract_TransferContractType, fromAddr, nonce, contracts,encondedMessage);
+
+            var data = this.BuildRequest(TXContract_ContractType.TXContract_TransferContractType, fromAddr, nonce, contracts, encondedMessage, kdaFee);
 
             return await this.PrepareTransaction(data);
         }
 
-        public SendRequest BuildRequest(TXContract_ContractType cType, string fromAddress, long nonce, List<IContract> contracts, byte[][] message = null)
+        public SendRequest BuildRequest(TXContract_ContractType cType, string fromAddress, long nonce, List<IContract> contracts, byte[][] message = null,string kdaFee = "")
         {
             if (contracts.Count == 0 || contracts.Count > 20)
             {
                 throw new ContractsSizeException(contracts.Count);
             }
+
 
             var request = new SendRequest
             {
@@ -319,6 +321,7 @@ namespace kleversdk.provider
                 Nonce = nonce,
                 //PermID = ,
                 Contracts = contracts,
+                KdaFee = kdaFee
             };
 
             if (message != null && message.Length > 0){
@@ -331,7 +334,8 @@ namespace kleversdk.provider
 
         public async Task<Transaction> PrepareTransaction(SendRequest request)
         {
-  
+
+
             var dataContent = new StringContent(request.String(), Encoding.UTF8, "application/json");
             var response = await _nodeClient.PostAsync($"transaction/send", dataContent);
 
