@@ -53,7 +53,7 @@ namespace kleversdk.provider.Dto
         public Int64 BandwidthFee { get; set; }
         public UInt32 Version { get; set; }
         public byte[] ChainId { get; set; }
-        public KDAFee KDAFee  { get; set;}
+        public KDAFee KDAFee  { get; set; }
     }
 
     public class Receipt
