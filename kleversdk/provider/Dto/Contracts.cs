@@ -359,7 +359,7 @@ namespace kleversdk.provider.Dto
         }
         public class Buy : IContract
         {
-            public Buy(int buyType, string id, string currencyId, float amount)
+            public Buy(int buyType, string id, string currencyId, long amount)
             {
 
                 this.buyType = buyType;
@@ -371,7 +371,7 @@ namespace kleversdk.provider.Dto
             public int buyType { get; set; }
             public string id { get; set; }
             public string currencyId { get; set; }
-            public float amount { get; set; }
+            public long amount { get; set; }
 
         }
         public class CancelMarketOrder : IContract
