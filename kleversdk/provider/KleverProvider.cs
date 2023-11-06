@@ -210,7 +210,7 @@ namespace kleversdk.provider
             var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_SellContractType, fromAddr, nonce, list, null, kdaFee);
             return await PrepareTransaction(data);
         }
-        public async Task<provider.Dto.Transaction> Buy(string fromAddr, long nonce, int buyType, string id, string currencyId, float amount, string kdaFee = "")
+        public async Task<provider.Dto.Transaction> Buy(string fromAddr, long nonce, int buyType, string id, string currencyId, long amount, string kdaFee = "")
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.Buy(buyType, id, currencyId, amount));
