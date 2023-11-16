@@ -203,7 +203,7 @@ namespace kleversdk.provider
             var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_ConfigMarketplaceContractType, fromAddr, nonce, list, null, kdaFee);
             return await PrepareTransaction(data);
         }
-        public async Task<provider.Dto.Transaction> Sell(string fromAddr, long nonce, int marketType, string marketplaceId, float assetId, string currencyId, float endTime, float price = default, float reservePrice = default, string kdaFee = "")
+        public async Task<provider.Dto.Transaction> Sell(string fromAddr, long nonce, int marketType, string marketplaceId, string assetId, string currencyId, long endTime, long price = default, long reservePrice = default, string kdaFee = "")
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.Sell(marketType, marketplaceId, assetId, currencyId, endTime, price, reservePrice));

@@ -338,12 +338,12 @@ namespace kleversdk.provider.Dto
 
         public class Sell : IContract
         {
-            public Sell(int marketType, string marketplaceId, float assetId, string currencyId, float endTime, float price = default, float reservePrice = default)
+            public Sell(int marketType, string marketplaceId, string assetId, string currencyId, long endTime, long price = default, long reservePrice = default)
             {
 
                 this.marketType = marketType;
                 this.marketplaceId = marketplaceId;
-                this.assetId = assetId.ToString();
+                this.assetId = assetId;
                 this.currencyId = currencyId;
                 this.price = price;
                 this.reservePrice = reservePrice;
@@ -353,9 +353,9 @@ namespace kleversdk.provider.Dto
             public string marketplaceId { get; set; }
             public string assetId { get; set; }
             public string currencyId { get; set; }
-            public float price { get; set; }
-            public float reservePrice { get; set; }
-            public float endTime { get; set; }
+            public long price { get; set; }
+            public long reservePrice { get; set; }
+            public long endTime { get; set; }
         }
         public class Buy : IContract
         {
