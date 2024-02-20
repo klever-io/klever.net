@@ -95,6 +95,9 @@ namespace kleversdk.provider.Dto
         public Int32 ResultCode { get; set; }
         public List<Receipt> Receipts{ get; set; }
         public UInt64 Block { get; set; }
+        public UInt64 GasLimit { get; set; }
+        public UInt64 GasMultiplier { get; set; }
+
 
         public Transaction()
         {

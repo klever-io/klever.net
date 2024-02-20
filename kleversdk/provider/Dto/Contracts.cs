@@ -28,7 +28,10 @@ namespace kleversdk.provider.Dto
         TXContract_CancelMarketOrderContractType,
         TXContract_CreateMarketplaceContractType,
         TXContract_ConfigMarketplaceContractType,
-        TXContract_UpdateAccountPermissionContractType
+        TXContract_UpdateAccountPermissionContractType,
+        TXContract_DepositContractType,
+        TXContract_ITOTriggerContractType,
+        TXContract_SmartContractType = 99
     }
 
     public class SendRequest
@@ -40,7 +43,7 @@ namespace kleversdk.provider.Dto
         public byte[][] Data { get; set; }
         public IContract Contract { get; set; }
         public List<IContract> Contracts { get; set; }
-        public string KdaFee { get; set;}
+        public string KdaFee { get; set; }
 
         public string String()
         {
@@ -67,96 +70,98 @@ namespace kleversdk.provider.Dto
         public long Amount { get; set; }
         public string Kda { get; set; }
     }
-          public class ClaimContract : IContract
+
+
+    public class ClaimContract : IContract
+    {
+        public ClaimContract(int claimType, string id)
         {
-            public ClaimContract(int claimType, string id)
-            {
-                ClaimType = claimType;
-                Id = id;
-            }
-
-            public int ClaimType { get; set; }
-            public string Id { get; set; }
-        }
-        public class FreezeContract : IContract
-        {
-            public FreezeContract(long amount, string kda = "klv")
-            {
-                this.amount = amount;
-                this.kda = kda;
-            }
-
-            public long amount { get; set; }
-            public string kda { get; set; }
-        }
-        public class UnfreezeContract : IContract
-        {
-            public UnfreezeContract(string bucketID, string kda = "KLV")
-            {
-                BucketID = bucketID;
-                Kda = kda;
-            }
-
-            public string BucketID { get; set; }
-            public string Kda { get; set; }
-        }
-        public class DelegateContract : IContract
-        {
-            public DelegateContract(string receiver, string bucketID)
-            {
-                Receiver = receiver;
-                BucketID = bucketID;
-            }
-
-            public string Receiver { get; set; }
-            public string BucketID { get; set; }
-
-        }
-        public class UndelegateContract : IContract
-        {
-            public UndelegateContract(string bucketID)
-            {
-                BucketID = bucketID;
-            }
-
-            public string BucketID { get; set; }
-        }
-        public class WithdrawContract : IContract
-        {
-            public WithdrawContract(string kda)
-            {
-                Kda = kda;
-            }
-
-            public string Kda { get; set; }
-        }
-        public class ProposalContract : IContract
-        {
-            public ProposalContract(Dictionary<Int32, string> parameter, long epochsDuration, string description = "")
-            {
-                Parameter = parameter;
-                EpochsDuration = epochsDuration;
-                Description = description;
-            }
-
-            public Dictionary<Int32, string> Parameter { get; set; }
-            public long EpochsDuration { get; set; }
-            public string Description { get; set; }
+            ClaimType = claimType;
+            Id = id;
         }
 
-        public class VoteContract : IContract
+        public int ClaimType { get; set; }
+        public string Id { get; set; }
+    }
+    public class FreezeContract : IContract
+    {
+        public FreezeContract(long amount, string kda = "klv")
         {
-            public VoteContract(long amount, long proposalID, int type)
-            {
-                Amount = amount;
-                ProposalID = proposalID;
-                Type = type;
-            }
-
-            public long Amount { get; set; }
-            public long ProposalID { get; set; }
-            public int Type { get; set; }
+            this.amount = amount;
+            this.kda = kda;
         }
+
+        public long amount { get; set; }
+        public string kda { get; set; }
+    }
+    public class UnfreezeContract : IContract
+    {
+        public UnfreezeContract(string bucketID, string kda = "KLV")
+        {
+            BucketID = bucketID;
+            Kda = kda;
+        }
+
+        public string BucketID { get; set; }
+        public string Kda { get; set; }
+    }
+    public class DelegateContract : IContract
+    {
+        public DelegateContract(string receiver, string bucketID)
+        {
+            Receiver = receiver;
+            BucketID = bucketID;
+        }
+
+        public string Receiver { get; set; }
+        public string BucketID { get; set; }
+
+    }
+    public class UndelegateContract : IContract
+    {
+        public UndelegateContract(string bucketID)
+        {
+            BucketID = bucketID;
+        }
+
+        public string BucketID { get; set; }
+    }
+    public class WithdrawContract : IContract
+    {
+        public WithdrawContract(string kda)
+        {
+            Kda = kda;
+        }
+
+        public string Kda { get; set; }
+    }
+    public class ProposalContract : IContract
+    {
+        public ProposalContract(Dictionary<Int32, string> parameter, long epochsDuration, string description = "")
+        {
+            Parameter = parameter;
+            EpochsDuration = epochsDuration;
+            Description = description;
+        }
+
+        public Dictionary<Int32, string> Parameter { get; set; }
+        public long EpochsDuration { get; set; }
+        public string Description { get; set; }
+    }
+
+    public class VoteContract : IContract
+    {
+        public VoteContract(long amount, long proposalID, int type)
+        {
+            Amount = amount;
+            ProposalID = proposalID;
+            Type = type;
+        }
+
+        public long Amount { get; set; }
+        public long ProposalID { get; set; }
+        public int Type { get; set; }
+    }
     public class CreateAssetContract : IContract
     {
         public CreateAssetContract(string name, string ticker, string ownerAddress, int precision, Dictionary<string, string> uris = null, string logo = "", long initialSupply = default, long maxSupply = default, int type = default, StakingObject staking = default, Royaltiesobject royalties = default, List<Role> roles = null, Propertiesobject properties = default, Attributesobject attributes = default)
@@ -192,314 +197,330 @@ namespace kleversdk.provider.Dto
         public Propertiesobject properties { get; set; }
         public Attributesobject attributes { get; set; }
     }
-            public struct StakingObject
-            {
-                public int type;
-                public long apr;
-                public long minEpochsToClaim;
-                public long minEpochsToUnstake;
-                public long minEpochsToWithdraw;
-            }
+    public struct StakingObject
+    {
+        public int type;
+        public long apr;
+        public long minEpochsToClaim;
+        public long minEpochsToUnstake;
+        public long minEpochsToWithdraw;
+    }
 
-            public struct Royaltiesobject
-            {
-                public string address;
-                public List<RoyalityInfo> transferPercentage;
-                public long transferFixed;
-                public long marketPercentage;
-                public long marketFixed;
-            }
+    public struct Royaltiesobject
+    {
+        public string address;
+        public List<RoyalityInfo> transferPercentage;
+        public long transferFixed;
+        public long marketPercentage;
+        public long marketFixed;
+    }
 
 
-            public struct Propertiesobject
-            {
-                public bool canFreeze;
-                public bool canWipe;
-                public bool canPause;
-                public bool canMint;
-                public bool canBurn;
-                public bool canChangeOwner;
-                public bool canAddRoles;
-            }
-            public struct Attributesobject
-            {
-                public bool isPaused;
-                public bool isNFTMintStopped;
-            }
-        
+    public struct Propertiesobject
+    {
+        public bool canFreeze;
+        public bool canWipe;
+        public bool canPause;
+        public bool canMint;
+        public bool canBurn;
+        public bool canChangeOwner;
+        public bool canAddRoles;
+    }
+    public struct Attributesobject
+    {
+        public bool isPaused;
+        public bool isNFTMintStopped;
+    }
 
-        public class Role
+
+    public class Role
+    {
+        public Role(string Address, bool HasRoleMint, bool HasRoleSetITOPrices)
         {
-            public Role(string Address, bool HasRoleMint, bool HasRoleSetITOPrices)
-            {
-                this.Address = Address;
-                this.HasRoleMint = HasRoleMint;
-                this.HasRoleSetITOPrices = HasRoleSetITOPrices;
-            }
-
-            public string Address { get; set; }
-            public bool HasRoleMint { get; set; }
-            public bool HasRoleSetITOPrices { get; set; }
+            this.Address = Address;
+            this.HasRoleMint = HasRoleMint;
+            this.HasRoleSetITOPrices = HasRoleSetITOPrices;
         }
 
-        public class TriggerAssetContract : IContract
+        public string Address { get; set; }
+        public bool HasRoleMint { get; set; }
+        public bool HasRoleSetITOPrices { get; set; }
+    }
+
+    public class TriggerAssetContract : IContract
+    {
+        public TriggerAssetContract(int triggerType, string assetID, string receiver = null, float amount = default, Dictionary<string, string> uris = null, string logo = null, string mime = null, Role role = null, StakingObject staking = default)
         {
-            public TriggerAssetContract(int triggerType, string assetID, string receiver = null, float amount = default, Dictionary<string, string> uris = null, string logo = null, string mime = null, Role role = null, StakingObject staking = default)
+            this.triggerType = triggerType;
+            AssetID = assetID;
+            Receiver = receiver;
+            Amount = amount;
+            Uris = uris;
+            Logo = logo;
+            this.mime = mime;
+            this.role = role;
+            this.staking = staking;
+        }
+
+        public int triggerType { get; set; }
+        public string AssetID { get; set; }
+        public string Receiver { get; set; }
+        public float Amount { get; set; }
+        public Dictionary<string, string> Uris { get; set; }
+        public string Logo { get; set; }
+        public string mime { get; set; }
+        public Role role { get; set; }
+        public StakingObject staking { get; set; }
+
+    }
+
+    public class ConfigITOContract : IContract
+    {
+        public ConfigITOContract(string receiverAddress, string kda, float maxAmount, int status, packInfo packInfo)
+        {
+            this.receiverAddress = receiverAddress;
+            this.kda = kda;
+            this.maxAmount = maxAmount;
+            this.status = status;
+            this.packInfo = packInfo;
+        }
+
+        public string receiverAddress { get; set; }
+        public string kda { get; set; }
+        public float maxAmount { get; set; }
+        public int status { get; set; }
+        public packInfo packInfo { get; set; }
+    }
+
+    public class SetITOContract : IContract
+    {
+        public SetITOContract(string kda, packInfo packInfo)
+        {
+            this.kda = kda;
+            this.packInfo = packInfo;
+        }
+        public string kda { get; set; }
+        public packInfo packInfo { get; set; }
+    }
+    public struct packInfo
+    {
+        public string key;
+        public List<packs> packs;
+    }
+    public struct packs
+    {
+        public float amount;
+        public float price;
+    }
+    public class CreateMarketplace : IContract
+    {
+        public CreateMarketplace(string name, string referralAddress = null, float referralPercentage = default)
+        {
+            this.name = name;
+            this.referralAddress = referralAddress;
+            this.referralPercentage = referralPercentage;
+        }
+
+        public string name { get; set; }
+        public string referralAddress { get; set; }
+        public float referralPercentage { get; set; }
+    }
+    public class ConfigMarketplace : IContract
+    {
+        public ConfigMarketplace(string name, string marketID, float referralPercentage, string referralAddress = null)
+        {
+            this.name = name;
+            this.referralAddress = referralAddress;
+            this.referralPercentage = referralPercentage;
+            this.marketID = marketID;
+        }
+
+        public string name { get; set; }
+        public string marketID { get; set; }
+        public string referralAddress { get; set; }
+        public float referralPercentage { get; set; }
+    }
+
+    public class Sell : IContract
+    {
+        public Sell(int marketType, string marketplaceId, string assetId, string currencyId, long endTime, long price = default, long reservePrice = default)
+        {
+
+            this.marketType = marketType;
+            this.marketplaceId = marketplaceId;
+            this.assetId = assetId;
+            this.currencyId = currencyId;
+            this.price = price;
+            this.reservePrice = reservePrice;
+            this.endTime = endTime;
+        }
+        public int marketType { get; set; }
+        public string marketplaceId { get; set; }
+        public string assetId { get; set; }
+        public string currencyId { get; set; }
+        public long price { get; set; }
+        public long reservePrice { get; set; }
+        public long endTime { get; set; }
+    }
+    public class Buy : IContract
+    {
+        public Buy(int buyType, string id, string currencyId, long amount)
+        {
+
+            this.buyType = buyType;
+            this.id = id;
+            this.currencyId = currencyId;
+            this.amount = amount;
+
+        }
+        public int buyType { get; set; }
+        public string id { get; set; }
+        public string currencyId { get; set; }
+        public long amount { get; set; }
+
+    }
+    public class CancelMarketOrder : IContract
+    {
+        public CancelMarketOrder(string orderId)
+        {
+
+            this.orderId = orderId;
+        }
+        public string orderId { get; set; }
+    }
+    public class CreateValidator : IContract
+    {
+        public CreateValidator(string name, string address, string rewardAddress, string blsPublicKey, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, Dictionary<string, string> uris = null)
+        {
+            this.name = name;
+            this.address = address;
+            this.rewardAddress = rewardAddress;
+            this.blsPublicKey = blsPublicKey;
+            this.canDelegate = canDelegate;
+            this.maxDelegationAmount = maxDelegationAmount;
+            this.comission = comission;
+            this.logo = logo;
+            this.uris = uris;
+        }
+        public string name { get; set; }
+        public string address { get; set; }
+        public string rewardAddress { get; set; }
+        public string blsPublicKey { get; set; }
+        public bool canDelegate { get; set; }
+        public float maxDelegationAmount { get; set; }
+        public float comission { get; set; }
+        public string logo { get; set; }
+        public Dictionary<string, string> uris { get; set; }
+
+    }
+    public class ConfigValidator : IContract
+    {
+        public ConfigValidator(string name, string rewardAddress, string blsPublicKey = null, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, Dictionary<string, string> uris = null)
+        {
+            this.name = name;
+            this.rewardAddress = rewardAddress;
+            this.blsPublicKey = blsPublicKey;
+            this.canDelegate = canDelegate;
+            this.maxDelegationAmount = maxDelegationAmount;
+            this.comission = comission;
+            this.logo = logo;
+            this.uris = uris;
+        }
+        public string name { get; set; }
+        public string rewardAddress { get; set; }
+        public string blsPublicKey { get; set; }
+        public bool canDelegate { get; set; }
+        public float maxDelegationAmount { get; set; }
+        public float comission { get; set; }
+        public string logo { get; set; }
+        public Dictionary<string, string> uris { get; set; }
+
+    }
+
+    public class SetAccountNameContract : IContract
+    {
+        public SetAccountNameContract(string name)
+        {
+            this.name = name;
+        }
+
+        public string name { get; set; }
+    }
+
+    public class UpdateAccountPermissionContract : IContract
+    {
+        public UpdateAccountPermissionContract(List<AccPermission> permissions)
+        {
+            this.permissions = permissions;
+        }
+
+        public List<AccPermission> permissions { get; set; }
+    }
+
+    public class SmartContract : IContract
+    {
+        public SmartContract(int scType, string address, Dictionary<string, long> callValue)
+        {
+            ScType = scType;
+            Address = address;
+            CallValue = callValue;
+        }
+
+        public int ScType { get; set; }
+        public string Address { get; set; }
+        public Dictionary<string, long> CallValue { get; set; }
+
+    }
+    public struct AccPermission
+    {
+        public int type;
+        public string permissionName;
+        public long threshold;
+        public string operations;
+        public List<AccKey> signers;
+    }
+    public struct AccKey
+    {
+        public string address;
+        public int weight;
+    }
+
+    [Serializable]
+    public class RoyalityInfo
+    {
+        private long _amount;
+        private long _percentage;
+
+        public RoyalityInfo(long amount, long percentage)
+        {
+            _amount = amount;
+            _percentage = percentage;
+        }
+
+        public long Amount
+        {
+            get
             {
-                this.triggerType = triggerType;
-                AssetID = assetID;
-                Receiver = receiver;
-                Amount = amount;
-                Uris = uris;
-                Logo = logo;
-                this.mime = mime;
-                this.role = role;
-                this.staking = staking;
+                return _amount;
             }
-
-            public int triggerType { get; set; }
-            public string AssetID { get; set; }
-            public string Receiver { get; set; }
-            public float Amount { get; set; }
-            public Dictionary<string, string> Uris { get; set; }
-            public string Logo { get; set; }
-            public string mime { get; set; }
-            public Role role { get; set; }
-            public StakingObject staking { get; set; }
-
-        }
-
-        public class ConfigITOContract : IContract
-        {
-            public ConfigITOContract(string receiverAddress, string kda, float maxAmount, int status, packInfo packInfo)
+            set
             {
-                this.receiverAddress = receiverAddress;
-                this.kda = kda;
-                this.maxAmount = maxAmount;
-                this.status = status;
-                this.packInfo = packInfo;
+                _amount = value;
             }
-
-            public string receiverAddress { get; set; }
-            public string kda { get; set; }
-            public float maxAmount { get; set; }
-            public int status { get; set; }
-            public packInfo packInfo { get; set; }
         }
 
-        public class SetITOContract : IContract
+        public long Percentage
         {
-            public SetITOContract(string kda, packInfo packInfo)
+            get
             {
-                this.kda = kda;
-                this.packInfo = packInfo;
+                return _percentage;
             }
-            public string kda { get; set; }
-            public packInfo packInfo { get; set; }
-        }
-        public struct packInfo
-        {
-            public string key;
-            public List<packs> packs;
-        }
-        public struct packs
-        {
-            public float amount;
-            public float price;
-        }
-        public class CreateMarketplace : IContract
-        {
-            public CreateMarketplace(string name, string referralAddress = null, float referralPercentage = default)
+            set
             {
-                this.name = name;
-                this.referralAddress = referralAddress;
-                this.referralPercentage = referralPercentage;
-            }
-
-            public string name { get; set; }
-            public string referralAddress { get; set; }
-            public float referralPercentage { get; set; }
-        }
-        public class ConfigMarketplace : IContract
-        {
-            public ConfigMarketplace(string name, string marketID, float referralPercentage, string referralAddress = null)
-            {
-                this.name = name;
-                this.referralAddress = referralAddress;
-                this.referralPercentage = referralPercentage;
-                this.marketID = marketID;
-            }
-
-            public string name { get; set; }
-            public string marketID { get; set; }
-            public string referralAddress { get; set; }
-            public float referralPercentage { get; set; }
-        }
-
-        public class Sell : IContract
-        {
-            public Sell(int marketType, string marketplaceId, string assetId, string currencyId, long endTime, long price = default, long reservePrice = default)
-            {
-
-                this.marketType = marketType;
-                this.marketplaceId = marketplaceId;
-                this.assetId = assetId;
-                this.currencyId = currencyId;
-                this.price = price;
-                this.reservePrice = reservePrice;
-                this.endTime = endTime;
-            }
-            public int marketType { get; set; }
-            public string marketplaceId { get; set; }
-            public string assetId { get; set; }
-            public string currencyId { get; set; }
-            public long price { get; set; }
-            public long reservePrice { get; set; }
-            public long endTime { get; set; }
-        }
-        public class Buy : IContract
-        {
-            public Buy(int buyType, string id, string currencyId, long amount)
-            {
-
-                this.buyType = buyType;
-                this.id = id;
-                this.currencyId = currencyId;
-                this.amount = amount;
-
-            }
-            public int buyType { get; set; }
-            public string id { get; set; }
-            public string currencyId { get; set; }
-            public long amount { get; set; }
-
-        }
-        public class CancelMarketOrder : IContract
-        {
-            public CancelMarketOrder(string orderId)
-            {
-
-                this.orderId = orderId;
-            }
-            public string orderId { get; set; }
-        }
-        public class CreateValidator : IContract
-        {
-            public CreateValidator(string name, string address, string rewardAddress, string blsPublicKey, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, Dictionary<string, string> uris = null)
-            {
-                this.name = name;
-                this.address = address;
-                this.rewardAddress = rewardAddress;
-                this.blsPublicKey = blsPublicKey;
-                this.canDelegate = canDelegate;
-                this.maxDelegationAmount = maxDelegationAmount;
-                this.comission = comission;
-                this.logo = logo;
-                this.uris = uris;
-            }
-            public string name { get; set; }
-            public string address { get; set; }
-            public string rewardAddress { get; set; }
-            public string blsPublicKey { get; set; }
-            public bool canDelegate { get; set; }
-            public float maxDelegationAmount { get; set; }
-            public float comission { get; set; }
-            public string logo { get; set; }
-            public Dictionary<string, string> uris { get; set; }
-
-        }
-        public class ConfigValidator : IContract
-        {
-            public ConfigValidator(string name, string rewardAddress, string blsPublicKey = null, bool canDelegate = default, float maxDelegationAmount = default, float comission = default, string logo = null, Dictionary<string, string> uris = null)
-            {
-                this.name = name;
-                this.rewardAddress = rewardAddress;
-                this.blsPublicKey = blsPublicKey;
-                this.canDelegate = canDelegate;
-                this.maxDelegationAmount = maxDelegationAmount;
-                this.comission = comission;
-                this.logo = logo;
-                this.uris = uris;
-            }
-            public string name { get; set; }
-            public string rewardAddress { get; set; }
-            public string blsPublicKey { get; set; }
-            public bool canDelegate { get; set; }
-            public float maxDelegationAmount { get; set; }
-            public float comission { get; set; }
-            public string logo { get; set; }
-            public Dictionary<string, string> uris { get; set; }
-
-        }
-
-        public class SetAccountNameContract : IContract
-        {
-            public SetAccountNameContract(string name)
-            {
-                this.name = name;
-            }
-
-            public string name { get; set; }
-        }
-
-        public class UpdateAccountPermissionContract : IContract
-        {
-            public UpdateAccountPermissionContract(List<AccPermission> permissions)
-            {
-                this.permissions = permissions;
-            }
-
-            public List<AccPermission> permissions { get; set; }
-        }
-        public struct AccPermission
-        {
-            public int type;
-            public string permissionName;
-            public long threshold;
-            public string operations;
-            public List<AccKey> signers;
-        }
-        public struct AccKey
-        {
-            public string address;
-            public int weight;
-        }
-        [Serializable]
-        public class RoyalityInfo
-        {
-            private long _amount;
-            private long _percentage;
-
-            public RoyalityInfo(long amount, long percentage)
-            {
-                _amount = amount;
-                _percentage = percentage;
-            }
-
-            public long Amount
-            {
-                get
-                {
-                    return _amount;
-                }
-                set
-                {
-                    _amount = value;
-                }
-            }
-
-            public long Percentage
-            {
-                get
-                {
-                    return _percentage;
-                }
-                set
-                {
-                    _percentage = value;
-                }
+                _percentage = value;
             }
         }
     }
+}
 
 

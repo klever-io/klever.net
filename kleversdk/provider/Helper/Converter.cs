@@ -9,6 +9,13 @@ namespace kleversdk.provider.Helper
     {
         private const byte UnsignedByte = 0x00;
 
+        public static BigInteger StringToBigInteger(string s)
+        {
+            s = s.Replace("0x", "");
+
+            return BigInteger.Parse(s);
+        }
+
         public static BigInteger ToBigInteger(byte[] bytes, bool isUnsigned = false, bool isBigEndian = false)
         {
             if (isUnsigned)
