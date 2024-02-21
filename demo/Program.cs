@@ -15,7 +15,7 @@ namespace demo
         {
             Console.WriteLine("SmartContracts Invoke Demo");
 
-            var kp = new KleverProvider(new NetworkConfig(Network.DevNet));
+            var kp = new KleverProvider(new NetworkConfig(Network.TestNet));
             var wallet = new Wallet("hex-private-key");
             var acc = wallet.GetAccount();
 
@@ -32,14 +32,10 @@ namespace demo
             Console.WriteLine("Address: {0}", acc.Address.Bech32);
             Console.WriteLine("Balance: {0}", acc.Balance);
 
-            var scType = 0; // Invoke Type
 
-            var functionName = "createLotteryPool"; // Name of the method you gonna call in smart contract
-            var smartContractAddress = "klv1qqqqqqqqqqqqqpgqghmn00u47ejq8jk37a7484sn7au3aqn6c0nqqtwsgw"; // Lottery Devnet Address
-            var callValue = new Dictionary<string, long> { };
+            // Handle Params
 
             var timestamp = DateTimeOffset.Now.ToUnixTimeSeconds() + 2000;
-
             List<string[]> scParamsLotery = new List<string[]> {
                 new string[] { "TEST" },
                 new string[] { "KLV" },
@@ -50,12 +46,16 @@ namespace demo
                 new string[] { "empty", ""},
                 new string[] { "empty", ""},
             };
+            var functionName = "createLotteryPool"; // Name of the method you gonna call in smart contract
+            var parameters = kleversdk.core.SmartContract.ToEncodeInvokeSmartContract(functionName, scParamsLotery);
 
-            var parameters = kleversdk.core.SmartContract.ToSmartContractParams(scParamsLotery);
+            var scType = 0; // Invoke Type
+            var smartContractAddress = "klv1qqqqqqqqqqqqqpgqlg5l6y5mx2zyysgwh37qjzv3e6ywwd5cxgds82pc09"; // Lottery Testnet Address
+            var callValue = new Dictionary<string, long> { };
 
             try
             {
-                var tx = await kp.SmartContract(acc.Address.Bech32, acc.Nonce, null, scType, smartContractAddress, callValue, functionName, parameters);
+                var tx = await kp.SmartContract(acc.Address.Bech32, acc.Nonce, null, scType, smartContractAddress, callValue, parameters);
                 var decoded = await kp.Decode(tx);
                 var signature = wallet.SignHex(decoded.Hash);
                 tx.AddSignature(signature);
@@ -76,7 +76,7 @@ namespace demo
         {
             Console.WriteLine("SmartContracts Deploy Demo");
 
-            var kp = new KleverProvider(new NetworkConfig(Network.DevNet));
+            var kp = new KleverProvider(new NetworkConfig(Network.TestNet));
             var wallet = new Wallet("hex-private-key");
             var acc = wallet.GetAccount();
 
@@ -104,21 +104,17 @@ namespace demo
             }
 
             byte[] file = File.ReadAllBytes(scPath);
-            var encodedSc = kleversdk.core.SmartContract.ToEncodedSmartContract(file, true, false, false, false);
 
             var scType = 1; // Deploy Type
-
-            var functionName = "";
-            var smartContractAddress = acc.Address.Bech32; // needs to be owner address
+            var smartContractAddress = ""; // needs to be empty
             var callValue = new Dictionary<string, long> { };
 
-            List<string[]> scParamsLotery = new List<string[]> { }; // in this case we don't need additional params
-
-            var parameters = kleversdk.core.SmartContract.ToSmartContractParams(scParamsLotery, encodedSc);
+            List<string[]> scParams = new List<string[]> { }; // in this case we don't need additional params
+            var parameters = kleversdk.core.SmartContract.ToEncodeDeploySmartContract(file, scParams, true, false, false, false);
 
             try
             {
-                var tx = await kp.SmartContract(acc.Address.Bech32, acc.Nonce, null, scType, smartContractAddress, callValue, functionName, parameters);
+                var tx = await kp.SmartContract(acc.Address.Bech32, acc.Nonce, null, scType, smartContractAddress, callValue, parameters);
                 var decoded = await kp.Decode(tx);
                 var signature = wallet.SignHex(decoded.Hash);
                 tx.AddSignature(signature);
