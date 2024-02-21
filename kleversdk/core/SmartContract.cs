@@ -20,46 +20,7 @@ namespace kleversdk.core
         {
         }
 
-        public static string ToEncodedSmartContract(byte[] file, bool upgradeable = false, bool readable = false, bool payable = false, bool payableBySC = false, string vmType = "0500")
-        {
-            // Handle Metadata
-
-            byte[] metadata = new byte[MetadataLength];
-
-            if (upgradeable)
-            {
-                metadata[0] |= MetadataUpgradeable;
-            }
-
-            if (readable)
-            {
-                metadata[0] |= MetadataReadable;
-            }
-
-
-            if (payable)
-            {
-                metadata[1] |= MetadataPayable;
-            }
-
-
-            if (payableBySC)
-            {
-                metadata[1] |= MetadataPayableBySC;
-            }
-
-            var metadata_hex = metadata.ToHex();
-
-            // Handle File
-
-            var fileHex = BitConverter.ToString(file).Replace("-", "");
-
-            var argsParsed = $"{fileHex}@{vmType}@{metadata_hex}";
-
-            return argsParsed;
-        }
-
-        public static string ToSmartContractParams(List<string[]> scParams, string encodedSc = "")
+        private static string ToSmartContractParams(List<string[]> scParams)
         {
             string parsedArgs = "";
 
@@ -268,8 +229,69 @@ namespace kleversdk.core
 
             }
 
-            return encodedSc + parsedArgs;
+            return parsedArgs;
         }
+
+        private static string ToSmartContractFileParams(byte[] file, bool upgradeable = false, bool readable = false, bool payable = false, bool payableBySC = false, string vmType = "0500")
+        {
+            // Handle Metadata
+
+            byte[] metadata = new byte[MetadataLength];
+
+            if (upgradeable)
+            {
+                metadata[0] |= MetadataUpgradeable;
+            }
+
+            if (readable)
+            {
+                metadata[0] |= MetadataReadable;
+            }
+
+
+            if (payable)
+            {
+                metadata[1] |= MetadataPayable;
+            }
+
+
+            if (payableBySC)
+            {
+                metadata[1] |= MetadataPayableBySC;
+            }
+
+            var metadata_hex = metadata.ToHex();
+
+            // Handle File
+
+            var fileHex = BitConverter.ToString(file).Replace("-", "");
+
+            var argsParsed = $"{fileHex}@{vmType}@{metadata_hex}";
+
+            return argsParsed;
+        }
+
+
+
+        public static string ToEncodeDeploySmartContract(byte[] file, List<string[]> scParams, bool upgradeable = false, bool readable = false, bool payable = false, bool payableBySC = false, string vmType = "0500")
+        {
+            string scParamsParsed = ToSmartContractParams(scParams);
+            string fileParamsParsed = ToSmartContractFileParams(file, upgradeable, readable, payable, payable, vmType);
+
+
+            return $"{fileParamsParsed}{scParamsParsed}";
+        }
+
+
+
+        public static string ToEncodeInvokeSmartContract(string functionName, List<string[]> scParams)
+        {
+            string scParamsParsed = ToSmartContractParams(scParams);
+
+            return $"{functionName}{scParamsParsed}";
+        }
+
+
     }
 }
 

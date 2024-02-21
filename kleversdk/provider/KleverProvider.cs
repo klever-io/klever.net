@@ -264,11 +264,9 @@ namespace kleversdk.provider
             return await PrepareTransaction(data);
         }
 
-        public async Task<provider.Dto.Transaction> SmartContract(string fromAddr, long nonce, List<provider.Dto.AccPermission> permission, int scType, string smartContractAddress, Dictionary<string, long> callValue, string functionName, string parameters, string kdaFee = "", long permID = 0)
+        public async Task<provider.Dto.Transaction> SmartContract(string fromAddr, long nonce, List<provider.Dto.AccPermission> permission, int scType, string smartContractAddress, Dictionary<string, long> callValue, string parameters, string kdaFee = "", long permID = 0)
         {
             var list = new List<provider.Dto.IContract>();
-            parameters = functionName + parameters;
-
             var encodedParameters = (byte[][])null;
             if (parameters != "")
             {

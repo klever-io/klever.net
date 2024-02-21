@@ -39,7 +39,7 @@ namespace kleversdk.provider
         Task<provider.Dto.Transaction> Unjail(string fromAddr, long nonce, string kdaFee = "", long permID = 0);
         Task<provider.Dto.Transaction> SetAccountName(string fromAddr, long nonce, string name, string kdaFee = "", long permID = 0);
         Task<provider.Dto.Transaction> UpdateAccountPermission(string fromAddr, long nonce, List<provider.Dto.AccPermission> permission, string kdaFee = "", long permID = 0);
-        Task<provider.Dto.Transaction> SmartContract(string fromAddr, long nonce, List<provider.Dto.AccPermission> permission, int scType, string address, Dictionary<string, long> callValue, string functionName, string parameters, string kdaFee = "", long permID = 0);
+        Task<provider.Dto.Transaction> SmartContract(string fromAddr, long nonce, List<provider.Dto.AccPermission> permission, int scType, string address, Dictionary<string, long> callValue, string parameters, string kdaFee = "", long permID = 0);
         Task<BroadcastResult> Broadcast(Transaction tx);
     }
 }
