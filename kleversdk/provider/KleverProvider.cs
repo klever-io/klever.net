@@ -13,7 +13,7 @@ namespace kleversdk.provider
 {
     public class KleverProvider : IKleverProvider
     {
-        
+
         private readonly HttpClient _nodeClient;
         private readonly HttpClient _apiClient;
 
@@ -28,11 +28,12 @@ namespace kleversdk.provider
             }
         }
 
-        private byte[][] EncodeMessage(string message){
+        private byte[][] EncodeMessage(string message)
+        {
 
             byte[][] encodedMessage = new byte[1][];
 
-            byte[] bytes = System.Text.Encoding.ASCII.GetBytes(message);;
+            byte[] bytes = System.Text.Encoding.ASCII.GetBytes(message);
 
             encodedMessage[0] = bytes;
 
@@ -74,14 +75,14 @@ namespace kleversdk.provider
 
         public async Task<Transaction> Send(string fromAddr, long nonce, string toAddr, float amount, string kda = "KLV", string kdaFee = "", long permID = 0)
         {
-            ToAmount[] values = { new ToAmount(toAddr, amount)};
+            ToAmount[] values = { new ToAmount(toAddr, amount) };
 
             return await this.MultiTransfer(fromAddr, nonce, kda, values, kdaFee, permID: permID);
         }
 
-        public async Task<Transaction> SendWithMessage(string fromAddr, long nonce, string toAddr, float amount,string message, string kda = "KLV", string kdaFee = "", long permID = 0)
+        public async Task<Transaction> SendWithMessage(string fromAddr, long nonce, string toAddr, float amount, string message, string kda = "KLV", string kdaFee = "", long permID = 0)
         {
-            ToAmount[] values = { new ToAmount(toAddr, amount)};
+            ToAmount[] values = { new ToAmount(toAddr, amount) };
 
             return await this.MultiTransfer(fromAddr, nonce, kda, values, kdaFee, message, permID);
         }
@@ -93,7 +94,7 @@ namespace kleversdk.provider
             var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_ClaimContractType, fromAddr, nonce, list, null, kdaFee, permID);
             return await PrepareTransaction(data);
         }
-        public async Task<provider.Dto.Transaction> Freeze(string fromAddr, long nonce, float Amount, string kda = "KLV" ,string kdaFee = "", long permID = 0)
+        public async Task<provider.Dto.Transaction> Freeze(string fromAddr, long nonce, float Amount, string kda = "KLV", string kdaFee = "", long permID = 0)
         {
             long precision = 6L;
             long parsedAmount = Convert.ToInt64(Amount * Math.Pow(10d, precision));
@@ -129,14 +130,14 @@ namespace kleversdk.provider
             var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_DelegateContractType, fromAddr, nonce, list, null, kdaFee, permID);
             return await PrepareTransaction(data);
         }
-        public async Task<provider.Dto.Transaction> UndelegateValidator(string fromAddr, long nonce, string BucketID,string kdaFee = "", long permID = 0)
+        public async Task<provider.Dto.Transaction> UndelegateValidator(string fromAddr, long nonce, string BucketID, string kdaFee = "", long permID = 0)
         {
             List<IContract> list = new List<IContract>();
             list.Add(new UndelegateContract(BucketID));
             var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_UndelegateContractType, fromAddr, nonce, list, null, kdaFee, permID);
             return await this.PrepareTransaction(data);
         }
-        public async Task<provider.Dto.Transaction> Withdraw(string fromAddr, long nonce, string kda,string kdaFee = "", long permID = 0)
+        public async Task<provider.Dto.Transaction> Withdraw(string fromAddr, long nonce, string kda, string kdaFee = "", long permID = 0)
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.WithdrawContract(kda));
@@ -241,7 +242,7 @@ namespace kleversdk.provider
             return await PrepareTransaction(data);
         }
 
-        public async Task<provider.Dto.Transaction> Unjail(string fromAddr, long nonce,string kdaFee = "", long permID = 0)
+        public async Task<provider.Dto.Transaction> Unjail(string fromAddr, long nonce, string kdaFee = "", long permID = 0)
         {
             var list = new List<provider.Dto.IContract>();
             var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_UnjailContractType, fromAddr, nonce, list, null, kdaFee, permID);
@@ -251,11 +252,11 @@ namespace kleversdk.provider
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.SetAccountNameContract(name));
-            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_SetAccountNameContractType, fromAddr, nonce, list,null, kdaFee, permID);
+            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_SetAccountNameContractType, fromAddr, nonce, list, null, kdaFee, permID);
             return await PrepareTransaction(data);
         }
 
-        public async Task<provider.Dto.Transaction> UpdateAccountPermission(string fromAddr, long nonce, List<provider.Dto.AccPermission> permission,string kdaFee = "", long permID = 0)
+        public async Task<provider.Dto.Transaction> UpdateAccountPermission(string fromAddr, long nonce, List<provider.Dto.AccPermission> permission, string kdaFee = "", long permID = 0)
         {
             var list = new List<provider.Dto.IContract>();
             list.Add(new provider.Dto.UpdateAccountPermissionContract(permission));
@@ -263,11 +264,26 @@ namespace kleversdk.provider
             return await PrepareTransaction(data);
         }
 
-        public async Task<Transaction> MultiTransfer(string fromAddr, long nonce, string kda, ToAmount[] values,string kdaFee, string message = "", long permID = 0)
+        public async Task<provider.Dto.Transaction> SmartContract(string fromAddr, long nonce, List<provider.Dto.AccPermission> permission, int scType, string smartContractAddress, Dictionary<string, long> callValue, string parameters, string kdaFee = "", long permID = 0)
+        {
+            var list = new List<provider.Dto.IContract>();
+            var encodedParameters = (byte[][])null;
+            if (parameters != "")
+            {
+                encodedParameters = EncodeMessage(parameters);
+            }
+
+            list.Add(new provider.Dto.SmartContract(scType, smartContractAddress, callValue));
+            var data = this.BuildRequest(provider.Dto.TXContract_ContractType.TXContract_SmartContractType, fromAddr, nonce, list, encodedParameters, kdaFee, permID);
+            return await PrepareTransaction(data);
+        }
+
+        public async Task<Transaction> MultiTransfer(string fromAddr, long nonce, string kda, ToAmount[] values, string kdaFee, string message = "", long permID = 0)
         {
             long precision = 6;
             bool isNFT = false;
-            if (kda.Contains("/")) {
+            if (kda.Contains("/"))
+            {
                 isNFT = true;
                 precision = 0;
             }
@@ -278,11 +294,12 @@ namespace kleversdk.provider
                 {
                     var asset = await this.GetAsset(kda);
                     precision = asset.Precision;
-                }catch(Exception e)
+                }
+                catch (Exception e)
                 {
                     throw e;
                 }
-                
+
             }
 
             List<IContract> contracts = new List<IContract>();
@@ -295,7 +312,8 @@ namespace kleversdk.provider
 
 
             var encondedMessage = (byte[][])null;
-            if (message != ""){
+            if (message != "")
+            {
                 encondedMessage = EncodeMessage(message);
             }
 
@@ -305,7 +323,7 @@ namespace kleversdk.provider
             return await this.PrepareTransaction(data);
         }
 
-        public SendRequest BuildRequest(TXContract_ContractType cType, string fromAddress, long nonce, List<IContract> contracts, byte[][] message = null,string kdaFee = "", long permID = 0)
+        public SendRequest BuildRequest(TXContract_ContractType cType, string fromAddress, long nonce, List<IContract> contracts, byte[][] message = null, string kdaFee = "", long permID = 0)
         {
             if (contracts.Count == 0 || contracts.Count > 20)
             {
@@ -319,12 +337,19 @@ namespace kleversdk.provider
                 Sender = fromAddress,
                 Nonce = nonce,
                 PermID = permID,
+                Contract = contracts[0],
                 Contracts = contracts,
                 KdaFee = kdaFee
             };
 
-            if (message != null && message.Length > 0){
+            if (message != null && message.Length > 0)
+            {
                 request.Data = message;
+            }
+
+            if (contracts.Count == 1)
+            {
+                request.Contract = contracts[0];
             }
 
             return request;
@@ -333,14 +358,13 @@ namespace kleversdk.provider
 
         public async Task<Transaction> PrepareTransaction(SendRequest request)
         {
-
-
             var dataContent = new StringContent(request.String(), Encoding.UTF8, "application/json");
             var response = await _nodeClient.PostAsync($"transaction/send", dataContent);
 
             var content = await response.Content.ReadAsStringAsync();
             var result = JsonSerializerWrapper.Deserialize<APIResponseDto<TransactionResult>>(content);
             result.EnsureSuccessStatusCode();
+
             return result.Data.Result;
         }
 

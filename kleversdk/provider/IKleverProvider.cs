@@ -16,12 +16,12 @@ namespace kleversdk.provider
         Task<KDADto> GetAsset(string assetID);
         Task<TransactionAPI> Decode(Transaction tx);
         Task<Transaction> Send(string fromAddr, long nonce, string toAddr, float amount, string kda = "KLV", string kdaFee = "", long permID = 0);
-        Task<Transaction> SendWithMessage(string fromAddr, long nonce, string toAddr, float amount,string message, string kda = "KLV", string kdaFee = "", long permID = 0);
+        Task<Transaction> SendWithMessage(string fromAddr, long nonce, string toAddr, float amount, string message, string kda = "KLV", string kdaFee = "", long permID = 0);
         Task<provider.Dto.Transaction> Claim(string fromAddr, long nonce, int claimType, string id = "KLV", string kdaFee = "", long permID = 0);
         Task<provider.Dto.Transaction> Freeze(string fromAddr, long nonce, float Amount, string kda = "KLV", string kdaFee = "", long permID = 0);
         Task<provider.Dto.Transaction> Unfreeze(string fromAddr, long nonce, string BucketID, string kda = "KLV", string kdaFee = "", long permID = 0);
         Task<provider.Dto.Transaction> DelegateValidator(string fromAddr, long nonce, string receiver, string BucketID, string kdaFee = "", long permID = 0);
-        Task<provider.Dto.Transaction> UndelegateValidator(string fromAddr, long nonce, string BucketID, string kdaFee = "", long permID = 0);    
+        Task<provider.Dto.Transaction> UndelegateValidator(string fromAddr, long nonce, string BucketID, string kdaFee = "", long permID = 0);
         Task<provider.Dto.Transaction> Withdraw(string fromAddr, long nonce, string kda, string kdaFee = "", long permID = 0);
         Task<provider.Dto.Transaction> Proposal(string fromAddr, long nonce, Dictionary<Int32, string> Parameter, long epochsDuration, string Description = null, string kdaFee = "", long permID = 0);
         Task<provider.Dto.Transaction> Vote(string fromAddr, long nonce, float amount, long proposalID, int type, string kdaFee = "", long permID = 0);
@@ -39,6 +39,7 @@ namespace kleversdk.provider
         Task<provider.Dto.Transaction> Unjail(string fromAddr, long nonce, string kdaFee = "", long permID = 0);
         Task<provider.Dto.Transaction> SetAccountName(string fromAddr, long nonce, string name, string kdaFee = "", long permID = 0);
         Task<provider.Dto.Transaction> UpdateAccountPermission(string fromAddr, long nonce, List<provider.Dto.AccPermission> permission, string kdaFee = "", long permID = 0);
+        Task<provider.Dto.Transaction> SmartContract(string fromAddr, long nonce, List<provider.Dto.AccPermission> permission, int scType, string address, Dictionary<string, long> callValue, string parameters, string kdaFee = "", long permID = 0);
         Task<BroadcastResult> Broadcast(Transaction tx);
     }
 }
