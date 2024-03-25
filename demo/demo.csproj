@@ -46,6 +46,7 @@
     <Reference Include="mscorlib" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Numerics" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
@@ -53,12 +54,16 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="smartContract\helloWorld.wasm" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\kleversdk\kleversdk.csproj">
       <Project>{E03274AD-6CD9-46D7-BBD5-8AC94AE869D7}</Project>
       <Name>kleversdk</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="smartContract\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>
