@@ -41,7 +41,7 @@ namespace kleversdk.core
            return ABIDecoder.DecodeSingleValue(hex, type, isNested);
         }
 
-        public static object DecodeByAbi(JsonABI abi, string hex, string endpointName)
+        public static object DecodeByAbi(JsonABI abi, string hex, string endpointName, bool isNested = false)
         {
             // check if is a valid endpoint
             var endpoint = abi.GetEndpoint(endpointName);
@@ -60,7 +60,7 @@ namespace kleversdk.core
             var type = endpoint.outputs[0].type;
 
 
-            return ABIDecoder.SelectDecoder(abi, hex, type);
+            return ABIDecoder.SelectDecoder(hex, type, isNested);
         }
 
         //private static string SelectDecode(JsonABI abi, string hex, string type)

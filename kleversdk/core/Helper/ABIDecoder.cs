@@ -44,21 +44,129 @@ namespace kleversdk.core.Helper
 		{
 		}
 
-        public static object SelectDecoder(JsonABI abi, string hex, string type)
+        private const int LengthHexSize = 8;
+        private const int BitsByHexDigit = 4;
+
+        private const int AddressSize = 64;
+        private const int INT64Size = 16;
+        private const int INT32Size = 8;
+        private const int INT16Size = 4;
+        private const int INT8Size = 2;
+
+        private static Tuple<string, string> CheckDelimiter(string type)
         {
+            var nestedType = type;
+
+            if (type.StartsWith("List<"))
+            {
+                type = type.Substring(0, 4);
+                nestedType = nestedType.Substring(5, nestedType.Length - type.Length - 2);
+
+                return Tuple.Create(type, nestedType);
+            }
+
+            return null;
+        }
+
+        public static object SelectDecoder(string hex, string type, bool isNested = false)
+        {
+
+            var tupleType = CheckDelimiter(type);
+
+            if (tupleType != null)
+            {
+                type = tupleType.Item1;
+            }
+            
             switch (type)
             {
                 case "List":
-                    throw new Exception($"not implemented type: {type}");
+                    return DecodeList(hex, tupleType.Item2);
                 case "Option":
-                    throw new Exception($"not implemented type: {type}");
+                    return DecodeOption(hex, tupleType.Item2);
                 case "tuple":
                     throw new Exception($"not implemented type: {type}");
                 case "variadic":
                     throw new Exception($"not implemented type: {type}");
                 default:
-                    return DecodeSingleValue(hex, type);
+                    return DecodeSingleValue(hex, type, isNested);
             }
+        }
+
+        public static object DecodeOption(string hex, string type)
+        {
+            if (hex.StartsWith("00"))
+            {
+                return "";
+            }
+
+            return SelectDecoder(hex, type, true);
+        }
+
+
+        public static object DecodeList(string hex, string type)
+        {
+            List<object> result = new List<object>();
+
+            do
+            {
+                string toDecode = "";
+
+                switch (type)
+                {
+                    case "BigInt":
+                    case "BigUint":
+                    case "String":
+                    case "ManagedBuffer":
+                    case "BoxedBytes":
+                    case "bytes":
+                    case "TokenIdentifier":
+                        Int32 hexLen = (Int32)DecodeInt(hex.Substring(0, LengthHexSize), LengthHexSize * BitsByHexDigit);
+                        var cutLen = LengthHexSize + 2 * hexLen;
+
+                        toDecode = hex.Substring(0, cutLen);
+
+                        hex = hex.Substring(cutLen);
+                        break;
+                    case "i64":
+                    case "u64":
+                        toDecode = hex.Substring(0, INT64Size);
+                        hex = hex.Substring(INT64Size);
+                        break;
+                    case "i32":
+                    case "u32":
+                    case "usize":
+                    case "isize":
+                        toDecode = hex.Substring(0, INT32Size);
+                        hex = hex.Substring(INT32Size);
+                        break;
+                    case "i16":
+                    case "u16":
+                        toDecode = hex.Substring(0, INT16Size);
+                        hex = hex.Substring(INT16Size);
+                        break;
+                    case "i8":
+                    case "u8":
+                        toDecode = hex.Substring(0, INT8Size);
+                        hex = hex.Substring(INT8Size);
+                        break;
+                    case "Address" :
+                        toDecode = hex.Substring(0, AddressSize);
+                        hex = hex.Substring(AddressSize);
+                        break;
+                    default:
+                        //// Default is for nested types
+                        break;
+                }
+
+                var target = SelectDecoder(toDecode, type, true);
+
+                result.Add(target);
+            } while (hex.Length > 0);
+
+
+
+            return result;
         }
 
         public static object DecodeSingleValue(string hex, string type, bool isNested = false)
@@ -66,8 +174,9 @@ namespace kleversdk.core.Helper
              switch (type)
             {
                 case "BigInt":
+                    return DecodeBigInt(hex, false, isNested);
                 case "BigUint":
-                    return DecodeBigInt(hex, isNested);
+                    return DecodeBigInt(hex, true, isNested);
                 case "i64":
                     return DecodeInt(hex, 64);
                 case "i32":
@@ -105,20 +214,10 @@ namespace kleversdk.core.Helper
             }
         }
 
-        private static BigInteger DecodeStringBigNumber(string hex) {
-            byte[] asciiBytes = Encoding.ASCII.GetBytes(hex);
-            return new BigInteger(asciiBytes);
-        }
 
-        public static BigInteger DecodeBigInt(string hex, bool isNested = false)
+        public static BigInteger DecodeBigInt(string hex, bool isUnsigned = false,bool isNested = false)
         {
-            var targetString = DecodeString(hex);
-            //check if is a string representing a decimal number
-            if (BigInteger.TryParse(targetString, NumberStyles.Number,null, out BigInteger targetValue))
-            {
-                    return targetValue;
-            }
-          
+
             if (isNested)
             {
                 int len = int.Parse(hex.Substring(0, 8), System.Globalization.NumberStyles.HexNumber);
@@ -126,8 +225,15 @@ namespace kleversdk.core.Helper
                 hex = hex.Substring(8, len * 2);
             }
 
+            var targetString = DecodeString(hex);
+            //check if is a string representing a decimal number
+            if (BigInteger.TryParse(targetString, NumberStyles.Number, null, out BigInteger targetValue))
+            {
+                return targetValue;
+            }
+
             var bytes = Converter.FromHexString(hex);
-            var bigIntegerParsed = Converter.ToBigInteger(bytes, false, true);
+            var bigIntegerParsed = Converter.ToBigInteger(bytes, isUnsigned, true);
 
             return bigIntegerParsed;
         
@@ -189,7 +295,6 @@ namespace kleversdk.core.Helper
 
         public static string DecodeString(string hex, bool isNested = false)
         {
-
             if (isNested)
             {
                 int len = int.Parse(hex.Substring(0, 8), System.Globalization.NumberStyles.HexNumber);
@@ -205,12 +310,6 @@ namespace kleversdk.core.Helper
 
             return Encoding.UTF8.GetString(decodedBytes);
         }
-
-
-
-
-
-
 
 
         //public static string DecodeTuple(JsonABI abi, string hex, string type)

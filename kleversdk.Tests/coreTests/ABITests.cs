@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Numerics;
 using kleversdk.core;
 using Xunit;
@@ -419,7 +420,7 @@ namespace kleversdk.Tests.coreTests
 
 
         [Fact]
-        public static void ABITests_SingleValuesDecode()
+        public static void ABITests_DecodeSingleValues()
         {
             string path = "./singleValue.json.example";
 
@@ -616,6 +617,13 @@ namespace kleversdk.Tests.coreTests
             value = ABI.DecodeByAbi(abi, hex, endpoint);
             Assert.Equal(expected, value);
 
+            endpoint = "big_minus_i64";
+            hex = "000000072d383233343732";
+            expected = BigInteger.Parse("-823472");
+
+            value = ABI.DecodeByAbi(abi, hex, endpoint,true); // forcing nested to test reasons
+            Assert.Equal(expected, value);
+
             endpoint = "number_i8";
             hex = "52";
             expected = sbyte.Parse("82");
@@ -675,9 +683,83 @@ namespace kleversdk.Tests.coreTests
         }
 
         [Fact]
-        public static void ABITests_DecodeList()
+        public static void ABITests_DecodeSingleList()
         {
+            string path = "./list.json.example";
 
+            JsonABI abi = ABI.LoadABIByFile(path);
+
+            var endpoint = "list_token_identifier";
+            var hex = "000000034b4c56000000034b4649000000084b49442d38473941000000084458422d483838470000000a43484950532d4e383941";
+            List<object> expected = new List<object>() { "KLV", "KFI", "KID-8G9A", "DXB-H88G", "CHIPS-N89A"};
+
+
+            object value = ABI.DecodeByAbi(abi, hex, endpoint);
+
+            Assert.Equal(expected, value);
+            Assert.IsType<List<object>>(value);
+
+            endpoint = "list_i32";
+            hex = "000000080000005700000065fffffffb";
+            expected = new List<object>() {8, 87, 101, -5};
+
+            value = ABI.DecodeByAbi(abi, hex, endpoint);
+
+            Assert.Equal(expected, value);
+            Assert.IsType<List<object>>(value);
+
+
+            endpoint = "list_u8";
+            hex = "085765DD";
+            expected = new List<object> { byte.Parse("8"), byte.Parse("87"), byte.Parse("101"), byte.Parse("221")};
+
+            value = ABI.DecodeByAbi(abi, hex, endpoint);
+
+            Assert.Equal(expected, value);
+            Assert.IsType<List<object>>(value);
+
+
+            endpoint = "list_bigint";
+            hex = "000000050577f695350000000109000000072d38323334373200000006353334323337";
+            expected = new List<object> { BigInteger.Parse("23487485237"), BigInteger.Parse("9"), BigInteger.Parse("-823472"), BigInteger.Parse("534237") };
+
+            value = ABI.DecodeByAbi(abi, hex, endpoint);
+
+            Assert.Equal(expected, value);
+            Assert.IsType<List<object>>(value);
+
+
+            endpoint = "list_address";
+            hex = "667fd274481cf5b07418b2fdc5d8baa6ae717239357f338cde99c2f612a96a9e667fd274481cf5b07418b2fdc5d8baa6ae717239357f338cde99c2f612a96a9e";
+            expected = new List<object> { "klv1velayazgrn6mqaqckt7utk9656h8zu3ex4ln8rx7n8p0vy4fd20qmwh4p5", "klv1velayazgrn6mqaqckt7utk9656h8zu3ex4ln8rx7n8p0vy4fd20qmwh4p5" };
+
+            value = ABI.DecodeByAbi(abi, hex, endpoint);
+
+            Assert.Equal(expected, value);
+            Assert.IsType<List<object>>(value);
+
+        }
+
+
+
+        [Fact]
+        public static void ABITests_DecodeNestedList()
+        {
+            string path = "./list.json.example";
+
+            JsonABI abi = ABI.LoadABIByFile(path);
+
+            var endpoint = "list_of_lists_tokens";
+            var hex = "00000003000000034b4c56000000034b4649000000084b49442d3847394100000003000000084458422d483838470000000a43484950532d4e383941000000084646542d32424836";
+            List<object> A = new List<object>() { "KLV", "KFI", "KID-8G9A" };
+            List<object> B = new List<object>() { "DXB-H88G", "CHIPS-N89A" , "FFT-2BH6" };
+            List<List<object>> expected = new List<List<object>>() { A, B };
+
+
+            var value = ABI.DecodeByAbi(abi, hex, endpoint);
+
+            Assert.Equal(expected, value);
+            Assert.IsType<List<List<object>>>(value);
         }
     }
 }
