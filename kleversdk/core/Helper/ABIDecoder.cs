@@ -103,69 +103,113 @@ namespace kleversdk.core.Helper
             return SelectDecoder(hex, type, true);
         }
 
+        public static int GetTypeSize(string type)
+        {
+            switch (type)
+            {
+                case "i64":
+                case "u64":
+                    return INT64Size;
+                case "i32":
+                case "u32":
+                case "usize":
+                case "isize":
+                    return INT32Size;
+                case "i16":
+                case "u16":
+                    return INT16Size;
+                case "i8":
+                case "u8":
+                    return INT8Size;
+                case "Address":
+                    return AddressSize;
+                default:
+                    return LengthHexSize;
+            }
+        }
+
+        public static Tuple<string,string> ListHandleValue(string hex, string type)
+        {
+            string toDecode = "";
+
+            var typeSize = GetTypeSize(type);
+
+            switch (type)
+            {
+                case "BigInt":
+                case "BigUint":
+                case "String":
+                case "ManagedBuffer":
+                case "BoxedBytes":
+                case "bytes":
+                case "TokenIdentifier":
+                    Int32 hexLen = (Int32)DecodeInt(hex.Substring(0, typeSize), typeSize * BitsByHexDigit);
+                    var cutLen = typeSize + 2 * hexLen;
+
+                    toDecode = hex.Substring(0, cutLen);
+
+                    hex = hex.Substring(cutLen);
+                    break;
+                case "i64":
+                case "u64":
+                case "i32":
+                case "u32":
+                case "usize":
+                case "isize":
+                case "i16":
+                case "u16":
+                case "i8":
+                case "u8":
+                case "Address":
+                    toDecode = hex.Substring(0, typeSize);
+                    hex = hex.Substring(typeSize);
+                    break;
+                default:
+                    if (type.StartsWith("List<"))
+                    {
+                        Int32 ListSize = (Int32)DecodeInt(hex.Substring(0, LengthHexSize), LengthHexSize * BitsByHexDigit);
+
+                        var auxHex = hex;
+
+                        var newType = type.Substring(5, type.Length - 5 - 1);
+
+                        var cutSize = GetTypeSize(newType);
+
+                        auxHex = auxHex.Substring(8);
+                        var totalLen = 0;
+
+                        for (int i = 0; i < ListSize; i++)
+                        {
+                            Int32 auxHexLen = (Int32)DecodeInt(auxHex.Substring(0, LengthHexSize), LengthHexSize * BitsByHexDigit);
+
+                            auxHex = auxHex.Substring(8);
+                            auxHex = auxHex.Substring(auxHexLen * 2);
+                            totalLen += 8 + (2 * auxHexLen);
+                        }
+
+                        toDecode = hex.Substring(8, totalLen);
+                        hex = hex.Substring(8 + totalLen);
+                    }
+                    break;
+                }
+
+            return Tuple.Create(hex, toDecode);
+        }
+
 
         public static object DecodeList(string hex, string type)
         {
             List<object> result = new List<object>();
 
             do
-            {
-                string toDecode = "";
+            { 
+                var tupleDecode = ListHandleValue(hex, type);
 
-                switch (type)
-                {
-                    case "BigInt":
-                    case "BigUint":
-                    case "String":
-                    case "ManagedBuffer":
-                    case "BoxedBytes":
-                    case "bytes":
-                    case "TokenIdentifier":
-                        Int32 hexLen = (Int32)DecodeInt(hex.Substring(0, LengthHexSize), LengthHexSize * BitsByHexDigit);
-                        var cutLen = LengthHexSize + 2 * hexLen;
-
-                        toDecode = hex.Substring(0, cutLen);
-
-                        hex = hex.Substring(cutLen);
-                        break;
-                    case "i64":
-                    case "u64":
-                        toDecode = hex.Substring(0, INT64Size);
-                        hex = hex.Substring(INT64Size);
-                        break;
-                    case "i32":
-                    case "u32":
-                    case "usize":
-                    case "isize":
-                        toDecode = hex.Substring(0, INT32Size);
-                        hex = hex.Substring(INT32Size);
-                        break;
-                    case "i16":
-                    case "u16":
-                        toDecode = hex.Substring(0, INT16Size);
-                        hex = hex.Substring(INT16Size);
-                        break;
-                    case "i8":
-                    case "u8":
-                        toDecode = hex.Substring(0, INT8Size);
-                        hex = hex.Substring(INT8Size);
-                        break;
-                    case "Address" :
-                        toDecode = hex.Substring(0, AddressSize);
-                        hex = hex.Substring(AddressSize);
-                        break;
-                    default:
-                        //// Default is for nested types
-                        break;
-                }
-
-                var target = SelectDecoder(toDecode, type, true);
-
+                var target = SelectDecoder(tupleDecode.Item2, type, true);
                 result.Add(target);
+
+                hex = tupleDecode.Item1;
             } while (hex.Length > 0);
-
-
-
             return result;
         }
 
