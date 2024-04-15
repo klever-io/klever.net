@@ -94,6 +94,26 @@
                     "type": "List<Address>"
                 }
             ]
+        },
+        {
+            "name": "list_of_lists_i64",
+            "mutability": "readonly",
+            "inputs": [],
+            "outputs": [
+                {
+                    "type": "List<List<i64>>"
+                }
+            ]
+        },
+        {
+          "name": "list_list_list_token",
+          "mutability": "readonly",
+          "inputs": [],
+          "outputs": [
+            {
+              "type": "List<List<List<TokenIdentifier>>>"
+            }
+          ]
         }
    ],
    "types":{

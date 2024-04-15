@@ -6,11 +6,11 @@ using Newtonsoft.Json.Linq;
 
 namespace kleversdk.core.Helper
 {
-	public class ABIEncoder
-	{
-		public ABIEncoder()
-		{
-		}
+    public class ABIEncoder
+    {
+        public ABIEncoder()
+        {
+        }
 
         public static string EncodeSingleValue(string value, string type, bool isNested = false)
         {
@@ -189,7 +189,7 @@ namespace kleversdk.core.Helper
             return AddPad(int64Parsed, convertedValue >= 0, 32);
         }
 
-       
+
         private static string EncodeUint64(string value, bool isNested)
         {
             if (value.Contains("-"))
@@ -260,9 +260,12 @@ namespace kleversdk.core.Helper
                 Console.WriteLine($"Error converting boolean {value} : {err.Message}");
             }
 
-            if (convertedValue){
+            if (convertedValue)
+            {
                 return "01";
-            }else {
+            }
+            else
+            {
                 return "00";
             }
         }

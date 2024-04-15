@@ -62,7 +62,7 @@ namespace kleversdk.core
 
 
                 arg = ABI.Encode(scValue, paramType);
-             
+
                 if (isOption)
                 {
                     arg = "01" + arg;

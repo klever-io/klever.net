@@ -4,45 +4,48 @@ using System.Collections.Generic;
 using System.Numerics;
 using System.Text;
 using System.Globalization;
+using System.Drawing;
 
 namespace kleversdk.core.Helper
 {
-    //public class DecodeResult
-    //{
-    //    public DecodeResult()
-    //    {
-    //    }
+    public class DecodeResult
+    {
+        public DecodeResult(string hex)
+        {
+            this.Hex = hex;
+        }
 
-    //    public DecodeResult(string hex, dynamic data)
-    //    {
-    //        this.NewHex = hex;
-    //        this.Data = data;
-    //    }
+        public DecodeResult(string hex, List<object> dataArray)
+        {
+            this.Hex = hex;
+            this.DataArray = dataArray;
+        }
 
-    //    public DecodeResult(string hex, string error)
-    //    {
-    //        this.NewHex = hex;
-    //        this.Error = error;
-    //    }
 
-    //    public DecodeResult(string hex, List<dynamic> dataArray)
-    //    {
-    //        this.NewHex = hex;
-    //        this.DataArray = dataArray;
-    //    }
+        public DecodeResult(string hex, string error)
+        {
+            this.Hex = hex;
+            this.Error = error;
+        }
 
-    //    public dynamic Data { get; set; }
-    //    public List<dynamic> DataArray { get; set; }
-    //    public string NewHex { get; set; }
-    //    public string Error { get; set; }
 
-    //}
+        public DecodeResult(string hex, object data)
+        {
+            this.Hex = hex;
+            this.Data = data;
+        }
+
+        public object Data { get; set; }
+        public List<object> DataArray { get; set; }
+        public string Hex { get; set; }
+        public string Error { get; set; }
+    }
 
     public class ABIDecoder
-	{
-		public ABIDecoder()
-		{
-		}
+    {
+        public ABIDecoder()
+        {
+        }
 
         private const int LengthHexSize = 8;
         private const int BitsByHexDigit = 4;
@@ -52,6 +55,12 @@ namespace kleversdk.core.Helper
         private const int INT32Size = 8;
         private const int INT16Size = 4;
         private const int INT8Size = 2;
+        private const int SomeSize = 2;
+        private const int BoolSize = 2;
+
+
+        private const int ListCutLen = 5;
+        private const int OptionCutLen = 7;
 
         private static Tuple<string, string> CheckDelimiter(string type)
         {
@@ -68,7 +77,38 @@ namespace kleversdk.core.Helper
             return null;
         }
 
-        public static object SelectDecoder(string hex, string type, bool isNested = false)
+        public static int GetTypeSize(string type)
+        {
+            switch (type)
+            {
+                case "i64":
+                case "u64":
+                case "64":
+                    return INT64Size;
+                case "i32":
+                case "u32":
+                case "32":
+                case "usize":
+                case "isize":
+                    return INT32Size;
+                case "i16":
+                case "u16":
+                case "16":
+                    return INT16Size;
+                case "i8":
+                case "u8":
+                case "8":
+                    return INT8Size;
+                case "bool":
+                    return BoolSize;
+                case "Address":
+                    return AddressSize;
+                default:
+                    return LengthHexSize;
+            }
+        }
+
+        public static object SelectDecoder(JsonABI abi, string hex, string type, bool isNested = false)
         {
 
             var tupleType = CheckDelimiter(type);
@@ -77,170 +117,167 @@ namespace kleversdk.core.Helper
             {
                 type = tupleType.Item1;
             }
-            
+
             switch (type)
             {
                 case "List":
-                    return DecodeList(hex, tupleType.Item2);
+                    return DecodeList(abi, hex, tupleType.Item2).DataArray;
                 case "Option":
-                    return DecodeOption(hex, tupleType.Item2);
+                // return DecodeOption(hex, tupleType.Item2);
                 case "tuple":
                     throw new Exception($"not implemented type: {type}");
                 case "variadic":
                     throw new Exception($"not implemented type: {type}");
                 default:
-                    return DecodeSingleValue(hex, type, isNested);
+                    return DecodeSingleValue(hex, type, isNested).Data;
             }
         }
 
-        public static object DecodeOption(string hex, string type)
+        private static DecodeResult DecodeListValue(JsonABI abi, string hex, string type)
         {
-            if (hex.StartsWith("00"))
+            if (type.StartsWith("Option<"))
             {
-                return "";
-            }
+                bool some = hex.Substring(0, SomeSize) == "01";
+                hex = hex.Substring(SomeSize);
 
-            return SelectDecoder(hex, type, true);
-        }
-
-        public static int GetTypeSize(string type)
-        {
-            switch (type)
-            {
-                case "i64":
-                case "u64":
-                    return INT64Size;
-                case "i32":
-                case "u32":
-                case "usize":
-                case "isize":
-                    return INT32Size;
-                case "i16":
-                case "u16":
-                    return INT16Size;
-                case "i8":
-                case "u8":
-                    return INT8Size;
-                case "Address":
-                    return AddressSize;
-                default:
-                    return LengthHexSize;
-            }
-        }
-
-        public static Tuple<string,string> ListHandleValue(string hex, string type)
-        {
-            string toDecode = "";
-
-            var typeSize = GetTypeSize(type);
-
-            switch (type)
-            {
-                case "BigInt":
-                case "BigUint":
-                case "String":
-                case "ManagedBuffer":
-                case "BoxedBytes":
-                case "bytes":
-                case "TokenIdentifier":
-                    Int32 hexLen = (Int32)DecodeInt(hex.Substring(0, typeSize), typeSize * BitsByHexDigit);
-                    var cutLen = typeSize + 2 * hexLen;
-
-                    toDecode = hex.Substring(0, cutLen);
-
-                    hex = hex.Substring(cutLen);
-                    break;
-                case "i64":
-                case "u64":
-                case "i32":
-                case "u32":
-                case "usize":
-                case "isize":
-                case "i16":
-                case "u16":
-                case "i8":
-                case "u8":
-                case "Address":
-                    toDecode = hex.Substring(0, typeSize);
-                    hex = hex.Substring(typeSize);
-                    break;
-                default:
-                    if (type.StartsWith("List<"))
-                    {
-                        Int32 ListSize = (Int32)DecodeInt(hex.Substring(0, LengthHexSize), LengthHexSize * BitsByHexDigit);
-
-                        var auxHex = hex;
-
-                        var newType = type.Substring(5, type.Length - 5 - 1);
-
-                        var cutSize = GetTypeSize(newType);
-
-                        auxHex = auxHex.Substring(8);
-                        var totalLen = 0;
-
-                        for (int i = 0; i < ListSize; i++)
-                        {
-                            Int32 auxHexLen = (Int32)DecodeInt(auxHex.Substring(0, LengthHexSize), LengthHexSize * BitsByHexDigit);
-
-                            auxHex = auxHex.Substring(8);
-                            auxHex = auxHex.Substring(auxHexLen * 2);
-                            totalLen += 8 + (2 * auxHexLen);
-                        }
-
-                        toDecode = hex.Substring(8, totalLen);
-                        hex = hex.Substring(8 + totalLen);
-                    }
-                    break;
+                if (!some)
+                {
+                    return new DecodeResult(hex);
                 }
 
-            return Tuple.Create(hex, toDecode);
+                type = type.Substring(OptionCutLen, type.Length - OptionCutLen - 1);
+            }
+
+            Int32 listSize = (Int32)DecodeInt(hex.Substring(0, LengthHexSize), LengthHexSize * BitsByHexDigit).Data;
+
+
+            type = type.Substring(ListCutLen, type.Length - ListCutLen - 1);
+            hex = hex.Substring(LengthHexSize);
+
+
+            var result = new List<object>();
+
+            for (int i = 0; i < listSize; i++)
+            {
+                var decodeResult = DecodeListHandler(abi, hex, type);
+
+                if (decodeResult.DataArray != null)
+                {
+                    result.Add(decodeResult.DataArray);
+                }
+                else
+                {
+                    result.Add(decodeResult.Data);
+                }
+
+                hex = decodeResult.Hex;
+
+            }
+
+            return new DecodeResult(hex, result);
         }
 
-
-        public static object DecodeList(string hex, string type)
+        private static DecodeResult DecodeListHandler(JsonABI abi, string hex, string type)
         {
+            if (type.StartsWith("List<"))
+            {
+                DecodeResult decodeResult = DecodeListValue(abi, hex, type);
+
+                if (decodeResult.Error != null)
+                {
+                    return new DecodeResult(hex, decodeResult.Error);
+                }
+
+                hex = decodeResult.Hex;
+
+                return new DecodeResult(hex, decodeResult.DataArray);
+            }
+
+            // check if struct
+            if (type != "struct")
+            {
+                var decodedValue = DecodeSingleValue(hex, type, true);
+
+                hex = decodedValue.Hex;
+
+                // TODO: check error
+                // change hex
+
+                return new DecodeResult(hex, decodedValue);
+            }
+
+            return null;
+            // Decode Struct
+        }
+
+        private static DecodeResult DecodeList(JsonABI abi, string hex, string type)
+        {
+            if (type.StartsWith("Option<"))
+            {
+                bool some = hex.Substring(0, SomeSize) == "01";
+                hex = hex.Substring(SomeSize);
+
+                if (!some)
+                {
+                    return new DecodeResult(hex);
+                }
+
+                type = type.Substring(OptionCutLen, type.Length - OptionCutLen - 1);
+            }
+
+
+
             List<object> result = new List<object>();
 
             do
-            { 
-                var tupleDecode = ListHandleValue(hex, type);
+            {
+                DecodeResult decodeResult = DecodeListHandler(abi, hex, type);
 
-                var target = SelectDecoder(tupleDecode.Item2, type, true);
-                result.Add(target);
+                if (decodeResult.DataArray != null)
+                {
+                    result.Add(decodeResult.DataArray);
+                }
+                else
+                {
+                    result.Add(decodeResult.Data);
+                }
 
-                hex = tupleDecode.Item1;
+                hex = decodeResult.Hex;
+
+
             } while (hex.Length > 0);
-            return result;
+
+            return new DecodeResult(hex, result as List<object>);
         }
 
-        public static object DecodeSingleValue(string hex, string type, bool isNested = false)
+        public static DecodeResult DecodeSingleValue(string hex, string type, bool isNested = false)
         {
-             switch (type)
+            switch (type)
             {
                 case "BigInt":
                     return DecodeBigInt(hex, false, isNested);
                 case "BigUint":
                     return DecodeBigInt(hex, true, isNested);
                 case "i64":
-                    return DecodeInt(hex, 64);
+                    return DecodeInt(hex, 64, isNested);
                 case "i32":
                 case "isize":
-                    return DecodeInt(hex, 32);
+                    return DecodeInt(hex, 32, isNested);
                 case "i16":
-                    return DecodeInt(hex, 16);
+                    return DecodeInt(hex, 16, isNested);
                 case "i8":
-                    return DecodeInt(hex, 8);
+                    return DecodeInt(hex, 8, isNested);
                 case "u64":
-                    return DecodeUint(hex, 64);
+                    return DecodeUint(hex, 64, isNested);
                 case "u32":
                 case "usize":
-                    return DecodeUint(hex, 32);
+                    return DecodeUint(hex, 32, isNested);
                 case "u16":
-                    return DecodeUint(hex, 16);
+                    return DecodeUint(hex, 16, isNested);
                 case "u8":
-                    return DecodeUint(hex, 8);
+                    return DecodeUint(hex, 8, isNested);
                 case "bool":
-                    return DecodeBool(hex);
+                    return DecodeBool(hex, isNested);
                 case "Address":
                     return DecodeAddress(hex);
                 case "ManagedBuffer":
@@ -259,206 +296,160 @@ namespace kleversdk.core.Helper
         }
 
 
-        public static BigInteger DecodeBigInt(string hex, bool isUnsigned = false,bool isNested = false)
+        public static DecodeResult DecodeBigInt(string hex, bool isUnsigned = false, bool isNested = false)
         {
+            string newHex = "";
+            string toDecode = hex;
+
 
             if (isNested)
             {
                 int len = int.Parse(hex.Substring(0, 8), System.Globalization.NumberStyles.HexNumber);
-
-                hex = hex.Substring(8, len * 2);
+                toDecode = hex.Substring(8, len * 2);
+                newHex = hex.Substring(8 + len * 2);
             }
 
-            var targetString = DecodeString(hex);
+            var decodeResult = DecodeString(toDecode);
             //check if is a string representing a decimal number
-            if (BigInteger.TryParse(targetString, NumberStyles.Number, null, out BigInteger targetValue))
+            if (BigInteger.TryParse(decodeResult.Data as string, NumberStyles.Number, null, out BigInteger targetValue))
             {
-                return targetValue;
+                return new DecodeResult(newHex, targetValue);
             }
 
-            var bytes = Converter.FromHexString(hex);
+            var bytes = Converter.FromHexString(toDecode);
             var bigIntegerParsed = Converter.ToBigInteger(bytes, isUnsigned, true);
 
-            return bigIntegerParsed;
-        
+            return new DecodeResult(newHex, bigIntegerParsed);
         }
 
-        public static object DecodeInt(string hex, int size) {
 
-            var bytes = Converter.FromHexString(hex);
+
+        public static DecodeResult DecodeInt(string hex, int size, bool isNested = false)
+        {
+            object parsedResult = "";
+            string newHex = "";
+
+
+            int cutLen = hex.Length;
+            if (isNested)
+            {
+                cutLen = GetTypeSize(size.ToString());
+            }
+
+            var toDecode = hex.Substring(0, cutLen);
+            var bytes = Converter.FromHexString(toDecode);
             var bigIntegerParsed = Converter.ToBigInteger(bytes, false, true);
 
             switch (size)
             {
                 case 64:
-                    return Int64.Parse(bigIntegerParsed.ToString());
+                    parsedResult = Int64.Parse(bigIntegerParsed.ToString());
+                    newHex = hex.Substring(cutLen);
+                    break;
                 case 32:
-                    return Int32.Parse(bigIntegerParsed.ToString());
+                    parsedResult = Int32.Parse(bigIntegerParsed.ToString());
+                    newHex = hex.Substring(cutLen);
+                    break;
                 case 16:
-                    return Int16.Parse(bigIntegerParsed.ToString());
+                    parsedResult = Int16.Parse(bigIntegerParsed.ToString());
+                    newHex = hex.Substring(cutLen);
+                    break;
                 case 8:
-                    return sbyte.Parse(bigIntegerParsed.ToString());
+                    parsedResult = sbyte.Parse(bigIntegerParsed.ToString());
+                    newHex = hex.Substring(cutLen);
+                    break;
                 default:
                     throw new Exception($"can't decode type: Int{size}");
             }
 
+
+            return new DecodeResult(newHex, parsedResult);
+
         }
 
-        public static object DecodeUint(string hex, int size)
+        public static DecodeResult DecodeUint(string hex, int size, bool isNested = false)
         {
+            object parsedResult = "";
+            string newHex = "";
 
-            var bytes = Converter.FromHexString(hex);
+            int cutLen = hex.Length;
+            if (isNested)
+            {
+                cutLen = GetTypeSize(size.ToString());
+            }
+
+            var toDecode = hex.Substring(0, cutLen);
+            var bytes = Converter.FromHexString(toDecode);
             var bigIntegerParsed = Converter.ToBigInteger(bytes, true, true);
 
             switch (size)
             {
                 case 64:
-                    return UInt64.Parse(bigIntegerParsed.ToString());
+                    parsedResult = UInt64.Parse(bigIntegerParsed.ToString());
+                    newHex = hex.Substring(cutLen);
+                    break;
                 case 32:
-                    return UInt32.Parse(bigIntegerParsed.ToString());
+                    parsedResult = UInt32.Parse(bigIntegerParsed.ToString());
+                    newHex = hex.Substring(cutLen);
+                    break;
                 case 16:
-                    return UInt16.Parse(bigIntegerParsed.ToString());
+                    parsedResult = UInt16.Parse(bigIntegerParsed.ToString());
+                    newHex = hex.Substring(cutLen);
+                    break;
                 case 8:
-                    return byte.Parse(bigIntegerParsed.ToString());
+                    parsedResult = byte.Parse(bigIntegerParsed.ToString());
+                    newHex = hex.Substring(cutLen);
+                    break;
                 default:
                     throw new Exception($"can't decode type: UInt{size}");
             }
 
+
+            return new DecodeResult(newHex, parsedResult);
         }
 
 
-        public static bool DecodeBool(string hex)
+        public static DecodeResult DecodeBool(string hex, bool isNested = false)
         {
-            return hex == "01";
+            string toDecode = hex;
+            int cutLen = hex.Length;
+            if (isNested)
+            {
+                cutLen = GetTypeSize("bool");
+                toDecode = toDecode.Substring(0, cutLen);
+            }
+
+            return new DecodeResult(hex.Substring(cutLen), toDecode == "01");
         }
 
-        public static string DecodeAddress(string hex)
+        public static DecodeResult DecodeAddress(string hex)
         {
-            return core.Address.FromHex(hex).Bech32;
+            int cutLen = GetTypeSize("Address");
+            return new DecodeResult(hex.Substring(cutLen), core.Address.FromHex(hex.Substring(0, cutLen)).Bech32 as object);
         }
 
-        public static string DecodeString(string hex, bool isNested = false)
+        public static DecodeResult DecodeString(string hex, bool isNested = false)
         {
+            var newHex = "";
+            var toDecode = hex;
+
             if (isNested)
             {
                 int len = int.Parse(hex.Substring(0, 8), System.Globalization.NumberStyles.HexNumber);
+                toDecode = hex.Substring(8, len * 2);
 
-                hex = hex.Substring(8, len * 2);
+                newHex = hex.Substring(8 + len * 2);
             }
 
-            byte[] decodedBytes = new byte[hex.Length / 2];
+            byte[] decodedBytes = new byte[toDecode.Length / 2];
             for (int i = 0; i < decodedBytes.Length; i++)
             {
-                decodedBytes[i] = Convert.ToByte(hex.Substring(i * 2, 2), 16);
+                decodedBytes[i] = Convert.ToByte(toDecode.Substring(i * 2, 2), 16);
             }
 
-            return Encoding.UTF8.GetString(decodedBytes);
+            return new DecodeResult(newHex, Encoding.UTF8.GetString(decodedBytes) as object);
         }
 
-
-        //public static string DecodeTuple(JsonABI abi, string hex, string type)
-        //{
-
-        //	return "";
-        //}
-
-        //      private static DecodeResult DecodeListValue(JsonABI abi, string hex, string type)
-        //      {
-
-        //          if (type.StartsWith("Option<"))
-        //          {
-        //              var some = hex.Substring(0, 2) == "01";
-
-        //              hex = hex.Substring(2, hex.Length);
-
-        //              if (!some)
-        //              {
-        //                  return new DecodeResult(hex: hex, data: null);
-        //              }
-
-        //              type = type.Substring(7, -1);
-
-        //          }
-
-        //          // parse Int
-
-        //          // slice again
-
-        //          // new hex
-
-        //          // for all something -> decodeListHandle
-
-
-        //          return new DecodeResult();
-
-        //      }
-
-        //      private static DecodeResult DecodeListHandle(JsonABI abi, string hex, string type)
-        //      {
-        //          if (type.StartsWith("List<"))
-        //          {
-        //              var decoded = DecodeListValue(abi, hex, type);
-
-        //              if (decoded.Error.Length > 0)
-        //              {
-        //                  return new DecodeResult(hex: hex, error: decoded.Error);
-        //              }
-
-        //              hex = decoded.NewHex;
-
-        //              return new DecodeResult(hex: hex, dataArray: decoded.DataArray);
-        //          }
-
-        //          // typeDefinition
-
-
-        //          return null;
-        //      }
-
-        //      public static List<object> DecodeList(JsonABI abi, string hex, string type)
-        //      {
-        //          List<object> result = new List<object>();
-
-        //          if (type.StartsWith("Option<")) {
-        //              var some = hex.Substring(0, 2) == "01";
-
-        //              hex = hex.Substring(2, hex.Length);
-
-        //              if (!some)
-        //              {
-        //                  result.Add(new DecodeResult(hex: hex, data: null));
-
-        //                  return result;
-        //              }
-
-        //              type = type.Substring(7, -1);
-
-        //          }
-        //          // check some types
-
-        //          do {
-        //              var decoded = DecodeListHandle(abi, hex, type);
-
-        //              if (decoded.DataArray.Count > 0)
-        //              {
-        //                  result.Add(decoded.DataArray);
-        //              } else {
-        //                  result.Add(decoded.Data);
-        //              }
-
-        //              hex = decoded.NewHex;
-
-        //          } while (hex.Length > 0);
-
-
-        //          return result;
-        //      }
-
-        //      public static List<object> DecodeVariadic(JsonABI abi, string hex, string type)
-        //      {
-        //          hex = hex.Substring(8, hex.Length);
-        //          return DecodeList(abi, hex, type);
-        //      }
-         }
     }
+}
 

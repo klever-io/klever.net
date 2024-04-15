@@ -2,7 +2,11 @@
 using System.Collections.Generic;
 using System.Numerics;
 using kleversdk.core;
+using kleversdk.Tests.coreTests.examples;
+using kleversdk.core.Helper;
+using Newtonsoft.Json.Linq;
 using Xunit;
+using System.Linq;
 
 namespace kleversdk.Tests.coreTests
 {
@@ -214,13 +218,13 @@ namespace kleversdk.Tests.coreTests
             var valueTrue = "01";
             var valueFalse = "00";
 
-            var decodedValueTrue = ABI.Decode(valueTrue, type);
-            var decodedValueFalse = ABI.Decode(valueFalse, type);
+            var decodedValueTrue = ABI.Decode(valueTrue, type) as DecodeResult;
+            var decodedValueFalse = ABI.Decode(valueFalse, type) as DecodeResult;
 
-            Assert.Equal(expectedTrue, decodedValueTrue);
-            Assert.Equal(expectedFalse, decodedValueFalse);
-            Assert.IsType<bool>(decodedValueTrue);
-            Assert.IsType<bool>(decodedValueFalse);
+            Assert.Equal(expectedTrue, decodedValueTrue.Data);
+            Assert.Equal(expectedFalse, decodedValueFalse.Data);
+            Assert.IsType<bool>(decodedValueTrue.Data);
+            Assert.IsType<bool>(decodedValueFalse.Data);
         }
 
         [Fact]
@@ -231,10 +235,10 @@ namespace kleversdk.Tests.coreTests
             var value = "0000000000000000000000000000000000000000000000000000000000000000";
             var expected = "klv1qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqpgm89z";
 
-            var decodedValueAddress = ABI.Decode(value, type);
+            var decodedValueAddress = ABI.Decode(value, type) as DecodeResult;
 
-            Assert.Equal(expected, decodedValueAddress);
-            Assert.IsType<string>(decodedValueAddress);
+            Assert.Equal(expected, decodedValueAddress.Data);
+            Assert.IsType<string>(decodedValueAddress.Data);
         }
 
 
@@ -253,18 +257,17 @@ namespace kleversdk.Tests.coreTests
             var expected_2 = "other-string-for-test";
 
 
-            var decodedValue = ABI.Decode(value, type, false);
-            var decodedValueNested = ABI.Decode(valueNested, type, true);
+            var decodedValue = ABI.Decode(value, type, false) as DecodeResult;
+            var decodedValueNested = ABI.Decode(valueNested, type, true) as DecodeResult;
+            var decodedValueNested_2 = ABI.Decode(valueNested_2, type, true) as DecodeResult;
 
-            var decodedValueNested_2 = ABI.Decode(valueNested_2, type, true);
+            Assert.Equal(expected, decodedValue.Data);
+            Assert.Equal(expected, decodedValueNested.Data);
+            Assert.Equal(expected_2, decodedValueNested_2.Data);
 
-            Assert.Equal(expected, decodedValue);
-            Assert.Equal(expected, decodedValueNested);
-            Assert.Equal(expected_2, decodedValueNested_2);
-
-            Assert.IsType<string>(decodedValue);
-            Assert.IsType<string>(decodedValueNested);
-            Assert.IsType<string>(decodedValueNested_2);
+            Assert.IsType<string>(decodedValue.Data);
+            Assert.IsType<string>(decodedValueNested.Data);
+            Assert.IsType<string>(decodedValueNested_2.Data);
         }
 
 
@@ -285,23 +288,23 @@ namespace kleversdk.Tests.coreTests
             Int64 expectedNegative = -1000;
 
 
-            var decodedValue = ABI.Decode(value, type, false);
-            var decodedValueNegative = ABI.Decode(valueNegative, type, false);
+            var decodedValue = ABI.Decode(value, type, false) as DecodeResult;
+            var decodedValueNegative = ABI.Decode(valueNegative, type, false) as DecodeResult;
 
-            var decodedValueNested = ABI.Decode(valueNested, type, true);
-            var decodedValueNestedNegative = ABI.Decode(valueNestedNegative, type, true);
-
-
-            Assert.Equal(expected, decodedValue);
-            Assert.Equal(expectedNegative, decodedValueNegative);
-            Assert.Equal(expected, decodedValueNested);
-            Assert.Equal(expectedNegative, decodedValueNestedNegative);
+            var decodedValueNested = ABI.Decode(valueNested, type, true) as DecodeResult;
+            var decodedValueNestedNegative = ABI.Decode(valueNestedNegative, type, true) as DecodeResult;
 
 
-            Assert.IsType<Int64>(decodedValue);
-            Assert.IsType<Int64>(decodedValueNegative);
-            Assert.IsType<Int64>(decodedValueNested);
-            Assert.IsType<Int64>(decodedValueNestedNegative);
+            Assert.Equal(expected, decodedValue.Data);
+            Assert.Equal(expectedNegative, decodedValueNegative.Data);
+            Assert.Equal(expected, decodedValueNested.Data);
+            Assert.Equal(expectedNegative, decodedValueNestedNegative.Data);
+
+
+            Assert.IsType<Int64>(decodedValue.Data);
+            Assert.IsType<Int64>(decodedValueNegative.Data);
+            Assert.IsType<Int64>(decodedValueNested.Data);
+            Assert.IsType<Int64>(decodedValueNestedNegative.Data);
 
         }
 
@@ -321,23 +324,23 @@ namespace kleversdk.Tests.coreTests
             Int32 expectedNegative = -1000;
 
 
-            var decodedValue = ABI.Decode(value, type, false);
-            var decodedValueNegative = ABI.Decode(valueNegative, type, false);
+            var decodedValue = ABI.Decode(value, type, false) as DecodeResult;
+            var decodedValueNegative = ABI.Decode(valueNegative, type, false) as DecodeResult;
 
-            var decodedValueNested = ABI.Decode(valueNested, type, true);
-            var decodedValueNestedNegative = ABI.Decode(valueNestedNegative, type, true);
-
-
-            Assert.Equal(expected, decodedValue);
-            Assert.Equal(expectedNegative, decodedValueNegative);
-            Assert.Equal(expected, decodedValueNested);
-            Assert.Equal(expectedNegative, decodedValueNestedNegative);
+            var decodedValueNested = ABI.Decode(valueNested, type, true) as DecodeResult;
+            var decodedValueNestedNegative = ABI.Decode(valueNestedNegative, type, true) as DecodeResult;
 
 
-            Assert.IsType<Int32>(decodedValue);
-            Assert.IsType<Int32>(decodedValueNegative);
-            Assert.IsType<Int32>(decodedValueNested);
-            Assert.IsType<Int32>(decodedValueNestedNegative);
+            Assert.Equal(expected, decodedValue.Data);
+            Assert.Equal(expectedNegative, decodedValueNegative.Data);
+            Assert.Equal(expected, decodedValueNested.Data);
+            Assert.Equal(expectedNegative, decodedValueNestedNegative.Data);
+
+
+            Assert.IsType<Int32>(decodedValue.Data);
+            Assert.IsType<Int32>(decodedValueNegative.Data);
+            Assert.IsType<Int32>(decodedValueNested.Data);
+            Assert.IsType<Int32>(decodedValueNestedNegative.Data);
 
         }
 
@@ -352,14 +355,14 @@ namespace kleversdk.Tests.coreTests
 
             UInt64 expected = 1000;
 
-            var decodedValue = ABI.Decode(value, type, false);
-            var decodedValueNested = ABI.Decode(valueNested, type, true);
+            var decodedValue = ABI.Decode(value, type, false) as DecodeResult;
+            var decodedValueNested = ABI.Decode(valueNested, type, true) as DecodeResult;
 
-            Assert.Equal(expected, decodedValue);
-            Assert.Equal(expected, decodedValueNested);
+            Assert.Equal(expected, decodedValue.Data);
+            Assert.Equal(expected, decodedValueNested.Data);
 
-            Assert.IsType<UInt64>(decodedValue);
-            Assert.IsType<UInt64>(decodedValueNested);
+            Assert.IsType<UInt64>(decodedValue.Data);
+            Assert.IsType<UInt64>(decodedValueNested.Data);
 
         }
 
@@ -374,14 +377,14 @@ namespace kleversdk.Tests.coreTests
 
             UInt32 expected = 1000;
 
-            var decodedValue = ABI.Decode(value, type, false);
-            var decodedValueNested = ABI.Decode(valueNested, type, true);
+            var decodedValue = ABI.Decode(value, type, false) as DecodeResult;
+            var decodedValueNested = ABI.Decode(valueNested, type, true) as DecodeResult;
 
-            Assert.Equal(expected, decodedValue);
-            Assert.Equal(expected, decodedValueNested);
+            Assert.Equal(expected, decodedValue.Data);
+            Assert.Equal(expected, decodedValueNested.Data);
 
-            Assert.IsType<UInt32>(decodedValue);
-            Assert.IsType<UInt32>(decodedValueNested);
+            Assert.IsType<UInt32>(decodedValue.Data);
+            Assert.IsType<UInt32>(decodedValueNested.Data);
         }
 
         [Fact]
@@ -399,32 +402,30 @@ namespace kleversdk.Tests.coreTests
 
 
 
-            var decodedValue = ABI.Decode(value, type, false);
-            var decodedValueNegative = ABI.Decode(valueNegative, type, false);
+            var decodedValue = ABI.Decode(value, type, false) as DecodeResult;
+            var decodedValueNegative = ABI.Decode(valueNegative, type, false) as DecodeResult;
 
-            var decodedValueNested = ABI.Decode(valueNested, type, true);
-            var decodedValueNestedNegative = ABI.Decode(valueNestedNegative, type, true);
-
-
-            Assert.Equal(expected, decodedValue);
-            Assert.Equal(expectedNegative, decodedValueNegative);
-            Assert.Equal(expected, decodedValueNested);
-            Assert.Equal(expectedNegative, decodedValueNestedNegative);
+            var decodedValueNested = ABI.Decode(valueNested, type, true) as DecodeResult;
+            var decodedValueNestedNegative = ABI.Decode(valueNestedNegative, type, true) as DecodeResult;
 
 
-            Assert.IsType<BigInteger>(decodedValue);
-            Assert.IsType<BigInteger>(decodedValueNegative);
-            Assert.IsType<BigInteger>(decodedValueNested);
-            Assert.IsType<BigInteger>(decodedValueNestedNegative);
+            Assert.Equal(expected, decodedValue.Data);
+            Assert.Equal(expectedNegative, decodedValueNegative.Data);
+            Assert.Equal(expected, decodedValueNested.Data);
+            Assert.Equal(expectedNegative, decodedValueNestedNegative.Data);
+
+
+            Assert.IsType<BigInteger>(decodedValue.Data);
+            Assert.IsType<BigInteger>(decodedValueNegative.Data);
+            Assert.IsType<BigInteger>(decodedValueNested.Data);
+            Assert.IsType<BigInteger>(decodedValueNestedNegative.Data);
         }
 
 
         [Fact]
         public static void ABITests_DecodeSingleValues()
         {
-            string path = "./singleValue.json.example";
-
-            JsonABI abi = ABI.LoadABIByFile(path);
+            JsonABI abi = ABI.LoadABIByString(ABIMock.SingleValueABI());
 
             var endpoint = "managed_buffer";
             var hex = "74657374696e67206f757470757473207479706573";
@@ -621,7 +622,7 @@ namespace kleversdk.Tests.coreTests
             hex = "000000072d383233343732";
             expected = BigInteger.Parse("-823472");
 
-            value = ABI.DecodeByAbi(abi, hex, endpoint,true); // forcing nested to test reasons
+            value = ABI.DecodeByAbi(abi, hex, endpoint, true); // forcing nested to test reasons
             Assert.Equal(expected, value);
 
             endpoint = "number_i8";
@@ -685,94 +686,155 @@ namespace kleversdk.Tests.coreTests
         [Fact]
         public static void ABITests_DecodeSingleList()
         {
-            string path = "./list.json.example";
-
-            JsonABI abi = ABI.LoadABIByFile(path);
+            JsonABI abi = ABI.LoadABIByString(ABIMock.ListABI());
 
             var endpoint = "list_token_identifier";
             var hex = "000000034b4c56000000034b4649000000084b49442d38473941000000084458422d483838470000000a43484950532d4e383941";
-            List<object> expected = new List<object>() { "KLV", "KFI", "KID-8G9A", "DXB-H88G", "CHIPS-N89A"};
+            List<object> expected = new List<object>() { "KLV", "KFI", "KID-8G9A", "DXB-H88G", "CHIPS-N89A" };
 
 
-            object value = ABI.DecodeByAbi(abi, hex, endpoint);
+            var values = ABI.DecodeByAbi(abi, hex, endpoint) as List<object>;
 
-            Assert.Equal(expected, value);
-            Assert.IsType<List<object>>(value);
+            for (int i = 0; i < values.Count(); i++)
+            {
+                DecodeResult v = values[i] as DecodeResult;
+                Assert.Equal(expected[i], v.Data);
+                Assert.IsType<string>(v.Data);
+            }
+
 
             endpoint = "list_i32";
             hex = "000000080000005700000065fffffffb";
             expected = new List<object>() { 8, 87, 101, -5 };
 
-            value = ABI.DecodeByAbi(abi, hex, endpoint);
 
-            Assert.Equal(expected, value);
-            Assert.IsType<List<object>>(value);
+            values = ABI.DecodeByAbi(abi, hex, endpoint) as List<object>;
+            for (int i = 0; i < values.Count(); i++)
+            {
+                DecodeResult v = values[i] as DecodeResult;
+                Assert.Equal(expected[i], v.Data);
+                Assert.IsType<int>(v.Data);
+            }
+
 
 
             endpoint = "list_u8";
             hex = "085765DD";
             expected = new List<object> { byte.Parse("8"), byte.Parse("87"), byte.Parse("101"), byte.Parse("221") };
 
-            value = ABI.DecodeByAbi(abi, hex, endpoint);
+            values = ABI.DecodeByAbi(abi, hex, endpoint) as List<object>;
 
-            Assert.Equal(expected, value);
-            Assert.IsType<List<object>>(value);
+            for (int i = 0; i < values.Count(); i++)
+            {
+                DecodeResult v = values[i] as DecodeResult;
+                Assert.Equal(expected[i], v.Data);
+                Assert.IsType<byte>(v.Data);
+            }
 
 
             endpoint = "list_bigint";
             hex = "000000050577f695350000000109000000072d38323334373200000006353334323337";
             expected = new List<object> { BigInteger.Parse("23487485237"), BigInteger.Parse("9"), BigInteger.Parse("-823472"), BigInteger.Parse("534237") };
 
-            value = ABI.DecodeByAbi(abi, hex, endpoint);
+            values = ABI.DecodeByAbi(abi, hex, endpoint) as List<object>;
+            for (int i = 0; i < values.Count(); i++)
+            {
+                DecodeResult v = values[i] as DecodeResult;
+                Assert.Equal(expected[i], v.Data);
+                Assert.IsType<BigInteger>(v.Data);
+            }
 
-            Assert.Equal(expected, value);
-            Assert.IsType<List<object>>(value);
 
 
             endpoint = "list_address";
             hex = "667fd274481cf5b07418b2fdc5d8baa6ae717239357f338cde99c2f612a96a9e667fd274481cf5b07418b2fdc5d8baa6ae717239357f338cde99c2f612a96a9e";
             expected = new List<object> { "klv1velayazgrn6mqaqckt7utk9656h8zu3ex4ln8rx7n8p0vy4fd20qmwh4p5", "klv1velayazgrn6mqaqckt7utk9656h8zu3ex4ln8rx7n8p0vy4fd20qmwh4p5" };
 
-            value = ABI.DecodeByAbi(abi, hex, endpoint);
+            values = ABI.DecodeByAbi(abi, hex, endpoint) as List<object>;
 
-            Assert.Equal(expected, value);
-            Assert.IsType<List<object>>(value);
+            for (int i = 0; i < values.Count(); i++)
+            {
+                DecodeResult v = values[i] as DecodeResult;
+                Assert.Equal(expected[i], v.Data);
+                Assert.IsType<string>(v.Data);
+            }
 
         }
-
-
 
         [Fact]
         public static void ABITests_DecodeNestedList()
         {
-            string path = "./list.json.example";
-
-            JsonABI abi = ABI.LoadABIByFile(path);
+            JsonABI abi = ABI.LoadABIByString(ABIMock.ListABI());
 
             var endpoint = "list_of_lists_tokens";
             var hex = "00000003000000034b4c56000000034b4649000000084b49442d3847394100000003000000084458422d483838470000000a43484950532d4e383941000000084646542d32424836";
             List<object> A = new List<object>() { "KLV", "KFI", "KID-8G9A" };
-            List<object> B = new List<object>() { "DXB-H88G", "CHIPS-N89A" , "FFT-2BH6" };
-            List<List<object>> expected = new List<List<object>>() { A, B };
+            List<object> B = new List<object>() { "DXB-H88G", "CHIPS-N89A", "FFT-2BH6" };
+
+            var value = ABI.DecodeByAbi(abi, hex, endpoint) as List<object>;
 
 
+            List<object> listA = value[0] as List<object>;
+            List<object> listB = value[1] as List<object>;
+
+            Assert.NotNull(value);
+
+
+            for (int i = 0; i < listA.Count(); i++)
+            {
+                DecodeResult v = listA[i] as DecodeResult;
+                Assert.Equal(A[i], v.Data);
+                Assert.IsType<string>(v.Data);
+            }
+
+            for (int i = 0; i < listB.Count(); i++)
+            {
+                DecodeResult v = listB[i] as DecodeResult;
+                Assert.Equal(B[i], v.Data);
+                Assert.IsType<string>(v.Data);
+            }
+
+
+
+            endpoint = "list_of_lists_i64";
+            hex = "0000000319ffee93a36dc12a000000000000001cd7e571502441e18400000003fffffffffffffffe000000000001e308fffffffff1b3cfdc";
+            A = new List<object>() { 1873478287878897962, Int64.Parse("28"), -2889778996868685436 };
+            B = new List<object>() { Int64.Parse("-2"), Int64.Parse("123656"), Int64.Parse("-239874084") };
+
+            value = ABI.DecodeByAbi(abi, hex, endpoint) as List<object>;
+            listA = value[0] as List<object>;
+            listB = value[1] as List<object>;
+
+            Assert.NotNull(value);
+
+            for (int i = 0; i < listA.Count(); i++)
+            {
+                DecodeResult v = listA[i] as DecodeResult;
+                Assert.Equal(A[i], v.Data);
+                Assert.IsType<long>(v.Data);
+            }
+
+            for (int i = 0; i < listB.Count(); i++)
+            {
+                DecodeResult v = listB[i] as DecodeResult;
+                Assert.Equal(B[i], v.Data);
+                Assert.IsType<long>(v.Data);
+            }
+
+
+
+        }
+
+        [Fact]
+        public static void ABITests_DecodeMultipleNestedList()
+        {
+            JsonABI abi = ABI.LoadABIByString(ABIMock.ListABI());
+
+            var endpoint = "list_list_list_token";
+            var hex = "00000002000000030000000a43484950532d4e383941000000034b4c56000000034b464900000003000000085446542d3738364a00000008534a412d4c4b394800000008514b552d37484831";
             var value = ABI.DecodeByAbi(abi, hex, endpoint);
 
-            //Assert.Equal(expected, value);
-            //Assert.IsType<List<object>>(value);
-
-            //endpoint = "list_of_lists_i64";
-            //hex = "00000003000000034b4c56000000034b4649000000084b49442d3847394100000003000000084458422d483838470000000a43484950532d4e383941000000084646542d32424836";
-            //A = new List<object>() { 1,2 };
-            //B = new List<object>() { 1,3 };
-            //expected = new List<List<object>>() { A, B };
-
-
-            //value = ABI.DecodeByAbi(abi, hex, endpoint);
-
-            //Assert.Equal(expected, value);
-            //Assert.IsType<List<object>>(value);
-
+            Assert.NotNull(value);
         }
     }
 }

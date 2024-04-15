@@ -60,46 +60,8 @@ namespace kleversdk.core
             var type = endpoint.outputs[0].type;
 
 
-            return ABIDecoder.SelectDecoder(hex, type, isNested);
+            return ABIDecoder.SelectDecoder(abi, hex, type, isNested);
         }
-
-        //private static string SelectDecode(JsonABI abi, string hex, string type)
-        //{
-        //    if (type.StartsWith("tuple<")){
-        //        // decodeTuple
-        //    }
-
-        //    if (type.StartsWith("variadic<"))
-        //    {
-        //        type = type.Replace("variadic<", "");
-
-        //        var decoded = ABIDecode.DecodeList(abi, hex, type);
-        //        // decodeVariadic
-        //    }
-
-        //    if (type.StartsWith("List<"))
-        //    {
-        //        // decodList
-        //    }
-
-        //    if (ABIHelper.isPrimitive(type)){
-        //        // decodePrimitive
-        //    }
-
-        //    // check type in abi
-
-        //    if (type == "struct") {
-        //        // return type
-        //     }
-
-
-        //    throw new Exception($"invalid type: {type}");
-        //}
-
-
-    
-
-
     }
 }
 
