@@ -22,7 +22,6 @@
   <ItemGroup>
     <None Remove="coreTests\" />
     <None Remove="coreTests\examples\" />
-    <None Remove="coreTests\examples\variadic.json.example" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="coreTests\" />

@@ -7,6 +7,7 @@ using kleversdk.core.Helper;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using System.Linq;
+using Org.BouncyCastle.Math.EC.Multiplier;
 
 namespace kleversdk.Tests.coreTests
 {
@@ -866,6 +867,44 @@ namespace kleversdk.Tests.coreTests
             Assert.Equal(diceValue, value[2]);
             Assert.Equal(multiplier, value[3]);
             Assert.Equal(isWinner, value[4]);
+        }
+
+
+        [Fact]
+        public static void ABITests_DecodeVariadic()
+        {
+            JsonABI abi = ABI.LoadABIByString(ABIMock.StructABI());
+
+            var endpoint = "winnersInfo";
+            var hex = "00000003667fd274481cf5b07418b2fdc5d8baa6ae717239357f338cde99c2f612a96a9e0000000403938700"; // struct -> u32 Address BigUint
+            var valueNested = ABI.DecodeByAbi(abi, hex, endpoint) as List<object>;
+
+            Assert.Equal(UInt32.Parse("3"), valueNested[0]);
+            Assert.Equal("klv1velayazgrn6mqaqckt7utk9656h8zu3ex4ln8rx7n8p0vy4fd20qmwh4p5", valueNested[1]);
+            Assert.Equal(BigInteger.Parse("60000000"), valueNested[2]);
+
+            endpoint = "variadic_i64";
+            hex = "049075ea";
+
+            var value = ABI.DecodeByAbi(abi, hex, endpoint);
+
+
+            Assert.Equal(Int64.Parse("76576234"), value); ;
+        }
+
+        [Fact]
+        public static void ABITests_DecodeTuple()
+        {
+            JsonABI abi = ABI.LoadABIByString(ABIMock.TupleABI());
+
+            var endpoint = "first_tuple";
+            var hex = "0000000e3736333435373839343336383937667fd274481cf5b07418b2fdc5d8baa6ae717239357f338cde99c2f612a96a9efffffffe84291d30"; // struct -> u32 Address BigUint
+            var valueNested = ABI.DecodeByAbi(abi, hex, endpoint) as List<object>;
+
+            Assert.Equal(BigInteger.Parse("76345789436897"), valueNested[0]);
+            Assert.Equal("klv1velayazgrn6mqaqckt7utk9656h8zu3ex4ln8rx7n8p0vy4fd20qmwh4p5", valueNested[1]);
+            Assert.Equal(Int64.Parse("-6372647632"), valueNested[2]);
+
         }
     }
 }

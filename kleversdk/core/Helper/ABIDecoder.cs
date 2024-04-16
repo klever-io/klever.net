@@ -62,6 +62,16 @@ namespace kleversdk.core.Helper
         private const int ListCutLen = 5;
         private const int OptionCutLen = 7;
 
+        private static bool IsPrimitive(string type)
+        {
+            string[] primitiveInputs = { "BigUint", "BigInt", "u8", "u16", "u32", "u64", "i8", "i16", "i32", "i64", "usize", "isize",
+         "TokenIdentifier", "String", "Address", "Bytes", "Hash", "PublicKey", "Signature", "ManagedBuffer", "BoxedBytes", "&[u8]",
+         "Vec<u8>", "&str", "bytes", "ManagedVec", "bool", "List","Array", "Tuple"};
+
+
+            return Array.Exists(primitiveInputs, element => element == type);
+        }
+
         private static Tuple<string, string> CheckDelimiter(string type)
         {
             var nestedType = type;
@@ -70,6 +80,22 @@ namespace kleversdk.core.Helper
             {
                 type = type.Substring(0, 4);
                 nestedType = nestedType.Substring(5, nestedType.Length - type.Length - 2);
+
+                return Tuple.Create(type, nestedType);
+            }
+
+            if (type.StartsWith("variadic<"))
+            {
+                type = type.Substring(0, 8);
+                nestedType = nestedType.Substring(9, nestedType.Length - type.Length - 2);
+
+                return Tuple.Create(type, nestedType);
+            }
+
+            if (type.StartsWith("tuple<"))
+            {
+                type = type.Substring(0, 5);
+                nestedType = nestedType.Substring(6, nestedType.Length - type.Length - 2);
 
                 return Tuple.Create(type, nestedType);
             }
@@ -125,9 +151,9 @@ namespace kleversdk.core.Helper
                 case "Option":
                     return DecodeOption(abi, hex, tupleType.Item2);
                 case "tuple":
-                    throw new Exception($"not implemented type: {type}");
+                    return DecodeTuple(abi, hex, tupleType.Item2);
                 case "variadic":
-                    return DecodeList(abi, hex, tupleType.Item2).DataArray;
+                    return DecodeVariadic(abi, hex, tupleType.Item2);
                 default:
                     TypeStruct typeStruct = abi.GetType(type);
 
@@ -136,11 +162,35 @@ namespace kleversdk.core.Helper
                         return DecodeSingleValue(hex, type, isNested).Data;
                     }
 
-                    return DecodeStruct(abi,hex,typeStruct);
+                    return DecodeStruct(abi,hex,typeStruct).Item1;
             }
         }
 
-        private static List<object> DecodeStruct(JsonABI abi, string hex, TypeStruct typeStruct)
+        private static object DecodeTuple(JsonABI abi, string hex, string typeStruct) {
+            char[] charSeparator = { ',' };
+
+
+            string[] types = typeStruct.Split(charSeparator);
+
+            List<object> result = new List<object>();
+
+            foreach (string type in types)
+            {
+                var decodedValue = DecodeSingleValue(hex,type,true);
+
+                result.Add(decodedValue.Data);
+                hex = decodedValue.Hex;
+            }
+
+            return result;
+        }
+
+        private static object DecodeVariadic(JsonABI abi, string hex, string type)
+        {
+            return SelectDecoder(abi, hex, type, false);
+        }
+
+        private static Tuple<List<object>,string> DecodeStruct(JsonABI abi, string hex, TypeStruct typeStruct)
         {
             List<object> result = new List<object>();
 
@@ -168,7 +218,7 @@ namespace kleversdk.core.Helper
             }
 
 
-            return result;
+            return Tuple.Create(result,hex);
         }
 
         private static DecodeResult DecodeListValue(JsonABI abi, string hex, string type)
@@ -231,7 +281,7 @@ namespace kleversdk.core.Helper
                 return new DecodeResult(hex, decodeResult.DataArray);
             }
 
-            if (type != "struct")
+            if (IsPrimitive(type))
             {
                 var decodedValue = DecodeSingleValue(hex, type, true);
                 if (decodedValue.Error != null)
@@ -251,11 +301,12 @@ namespace kleversdk.core.Helper
             }
 
 
-            List<object> decodedStruct = DecodeStruct(abi, hex, typeStruct);
+            var decodedTuple = DecodeStruct(abi, hex, typeStruct);
 
-            DecodeResult lastResult = decodedStruct[decodedStruct.Count] as DecodeResult;
 
-            return new DecodeResult(lastResult.Hex, decodedStruct);
+            DecodeResult lastResult = decodedTuple.Item1[decodedTuple.Item1.Count - 1] as DecodeResult;
+
+            return new DecodeResult(decodedTuple.Item2, decodedTuple.Item1);
 
         }
 
