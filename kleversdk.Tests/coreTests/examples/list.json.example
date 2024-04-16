@@ -114,7 +114,17 @@
               "type": "List<List<List<TokenIdentifier>>>"
             }
           ]
+        },
+    {
+      "name": "list_list_list_i64",
+      "mutability": "readonly",
+      "inputs": [],
+      "outputs": [
+        {
+          "type": "List<List<List<i64>>>"
         }
+      ]
+    }
    ],
    "types":{
       

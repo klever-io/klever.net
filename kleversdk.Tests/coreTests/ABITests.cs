@@ -835,6 +835,37 @@ namespace kleversdk.Tests.coreTests
             var value = ABI.DecodeByAbi(abi, hex, endpoint);
 
             Assert.NotNull(value);
+
+            endpoint = "list_list_list_i64";
+            hex = "0000000200000003000000006fab0276000000000000001cffffffffffff9ca400000003fffffffffffffffe000000000001e308fffffffff1b3cfdc0000000200000003fffffffffe4932e1000007f24bf1555700000000000000800000000300000010d9e95b690000000000000001ffffffffffffff9c";
+            value = ABI.DecodeByAbi(abi, hex, endpoint);
+
+            Assert.NotNull(value);
+        }
+
+        [Fact]
+        public static void ABITests_DecodeStruct()
+        {
+            JsonABI abi = ABI.LoadABIByString(ABIMock.StructABI());
+
+            var endpoint = "getLastResult";
+            var hex = "000000000000005a0000003a0000006f01"; // u32 u32 u32 u32 bool
+            var value = ABI.DecodeByAbi(abi, hex, endpoint) as List<object>;
+
+            var betType = UInt32.Parse("0"); // UNDER
+            var betValue = UInt32.Parse("90");
+            var diceValue = UInt32.Parse("58");
+            var multiplier = UInt32.Parse("111");
+            var isWinner = true;
+
+            // BET UNDER 90 -> RESULT 58 = WIN
+
+            Assert.NotNull(value);
+            Assert.Equal(betType, value[0]);
+            Assert.Equal(betValue, value[1]);
+            Assert.Equal(diceValue, value[2]);
+            Assert.Equal(multiplier, value[3]);
+            Assert.Equal(isWinner, value[4]);
         }
     }
 }

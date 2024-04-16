@@ -123,14 +123,52 @@ namespace kleversdk.core.Helper
                 case "List":
                     return DecodeList(abi, hex, tupleType.Item2).DataArray;
                 case "Option":
-                // return DecodeOption(hex, tupleType.Item2);
+                    return DecodeOption(abi, hex, tupleType.Item2);
                 case "tuple":
                     throw new Exception($"not implemented type: {type}");
                 case "variadic":
-                    throw new Exception($"not implemented type: {type}");
+                    return DecodeList(abi, hex, tupleType.Item2).DataArray;
                 default:
-                    return DecodeSingleValue(hex, type, isNested).Data;
+                    TypeStruct typeStruct = abi.GetType(type);
+
+                    if(typeStruct == null)
+                    {
+                        return DecodeSingleValue(hex, type, isNested).Data;
+                    }
+
+                    return DecodeStruct(abi,hex,typeStruct);
             }
+        }
+
+        private static List<object> DecodeStruct(JsonABI abi, string hex, TypeStruct typeStruct)
+        {
+            List<object> result = new List<object>();
+
+
+            foreach (Fields field in typeStruct.fields)
+            {
+                if (field.type.StartsWith("List<"))
+                {
+                    var decodedList = DecodeListValue(abi, hex, field.type);
+                    if (decodedList.Error != null)
+                    {
+                        throw new Exception(decodedList.Error);
+                    }
+
+                    result.Add(decodedList.DataArray); 
+                  
+                    hex = decodedList.Hex;
+                    continue;
+                }
+
+                var decoded = DecodeSingleValue(hex, field.type, true);
+
+                result.Add(decoded.Data);
+                hex = decoded.Hex;
+            }
+
+
+            return result;
         }
 
         private static DecodeResult DecodeListValue(JsonABI abi, string hex, string type)
@@ -193,21 +231,32 @@ namespace kleversdk.core.Helper
                 return new DecodeResult(hex, decodeResult.DataArray);
             }
 
-            // check if struct
             if (type != "struct")
             {
                 var decodedValue = DecodeSingleValue(hex, type, true);
+                if (decodedValue.Error != null)
+                {
+                    throw new Exception(decodedValue.Error);
+                }
 
                 hex = decodedValue.Hex;
-
-                // TODO: check error
-                // change hex
-
                 return new DecodeResult(hex, decodedValue);
             }
 
-            return null;
-            // Decode Struct
+            TypeStruct typeStruct = abi.GetType(type);
+
+            if (typeStruct == null)
+            {
+                throw new Exception($"invalid type: {type}");
+            }
+
+
+            List<object> decodedStruct = DecodeStruct(abi, hex, typeStruct);
+
+            DecodeResult lastResult = decodedStruct[decodedStruct.Count] as DecodeResult;
+
+            return new DecodeResult(lastResult.Hex, decodedStruct);
+
         }
 
         private static DecodeResult DecodeList(JsonABI abi, string hex, string type)
@@ -248,6 +297,22 @@ namespace kleversdk.core.Helper
             } while (hex.Length > 0);
 
             return new DecodeResult(hex, result as List<object>);
+        }
+
+        public static object DecodeOption(JsonABI abi, string hex, string type, bool isNested = false) {
+
+                bool some = hex.Substring(0, SomeSize) == "01";
+                hex = hex.Substring(SomeSize);
+
+                if (!some)
+                {
+                    return new DecodeResult(hex);
+                }
+
+                type = type.Substring(OptionCutLen, type.Length - OptionCutLen - 1);
+
+
+            return SelectDecoder(abi,hex,type,isNested);
         }
 
         public static DecodeResult DecodeSingleValue(string hex, string type, bool isNested = false)

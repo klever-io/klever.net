@@ -1,20 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using kleversdk.core;
+using Newtonsoft.Json;
 
 public class Input
 {
     public string name { get; set; }
     public string type { get; set; }
-
-    public bool IsPrimitive()
-    {
-         string[] primitiveInputs = { "BigUint", "BigInt", "u8", "u16", "u32", "u64", "i8", "i16", "i32", "i64", "usize", "isize",
-         "TokenIdentifier", "String", "Address", "Bytes", "Hash", "PublicKey", "Signature", "ManagedBuffer", "BoxedBytes", "&[u8]",
-         "Vec<u8>", "&str", "bytes", "ManagedVec", "bool", "List","Array", "Tuple"};
-
-
-        return Array.Exists(primitiveInputs, element => element == this.name);
-    }
 
 }
 
@@ -40,6 +32,20 @@ public class Endpoint
 
 }
 
+public class TypeStruct
+{
+    public string type { get; set; }
+    public Fields[] fields { get; set; }
+}
+
+public class Fields
+{
+    public string name { get; set; }
+    public string type { get; set; }
+}
+
+
+
 public class JsonABI
 {
     public List<Endpoint> endpoints { get; set; }
@@ -55,6 +61,20 @@ public class JsonABI
 
         }
 
+        return null;
+    }
+
+    public TypeStruct GetType(string name)
+    {
+
+        foreach (var type in this.types)
+        {
+            if (type.Key == name)
+            {
+               return JsonConvert.DeserializeObject<TypeStruct>(type.Value.ToString());
+            }
+
+        }
         return null;
     }
 
