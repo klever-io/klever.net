@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "demo", "demo\demo.csproj", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kleversdk", "kleversdk\kleversdk.csproj", "{E03274AD-6CD9-46D7-BBD5-8AC94AE869D7}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "kleversdk.Tests", "kleversdk.Tests\kleversdk.Tests.csproj", "{47290DD7-82BC-4786-BE3D-132992D70F7A}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		kleversdk\kleversdk.projitems*{0611bc38-01e5-42f5-9406-132b4e63ad90}*SharedItemsImports = 13
@@ -25,6 +27,10 @@ Global
 		{E03274AD-6CD9-46D7-BBD5-8AC94AE869D7}.Debug|anycpu.Build.0 = Debug|Any CPU
 		{E03274AD-6CD9-46D7-BBD5-8AC94AE869D7}.Release|anycpu.ActiveCfg = Release|Any CPU
 		{E03274AD-6CD9-46D7-BBD5-8AC94AE869D7}.Release|anycpu.Build.0 = Release|Any CPU
+		{47290DD7-82BC-4786-BE3D-132992D70F7A}.Debug|anycpu.ActiveCfg = Debug|Any CPU
+		{47290DD7-82BC-4786-BE3D-132992D70F7A}.Debug|anycpu.Build.0 = Debug|Any CPU
+		{47290DD7-82BC-4786-BE3D-132992D70F7A}.Release|anycpu.ActiveCfg = Release|Any CPU
+		{47290DD7-82BC-4786-BE3D-132992D70F7A}.Release|anycpu.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
