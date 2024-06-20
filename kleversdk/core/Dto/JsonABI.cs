@@ -3,20 +3,20 @@ using System.Collections.Generic;
 using kleversdk.core;
 using Newtonsoft.Json;
 
-public class Input
+public class SCInput
 {
     public string name { get; set; }
     public string type { get; set; }
 
 }
 
-public class Endpoint
+public class SCEndpoint
 {
     public string name { get; set; }
     public string mutability { get; set; }
-    public List<Input> outputs { get; set; }
+    public List<SCInput> outputs { get; set; }
 
-    public Input GetOutput(string name)
+    public SCInput GetOutput(string name)
     {
         foreach (var output in this.outputs)
         {
@@ -32,13 +32,13 @@ public class Endpoint
 
 }
 
-public class TypeStruct
+public class SCTypeStruct
 {
     public string type { get; set; }
-    public Fields[] fields { get; set; }
+    public SCFields[] fields { get; set; }
 }
 
-public class Fields
+public class SCFields
 {
     public string name { get; set; }
     public string type { get; set; }
@@ -48,10 +48,10 @@ public class Fields
 
 public class JsonABI
 {
-    public List<Endpoint> endpoints { get; set; }
+    public List<SCEndpoint> endpoints { get; set; }
     public Dictionary<string, object> types { get; set; }
 
-    public Endpoint GetEndpoint(string name)
+    public SCEndpoint GetEndpoint(string name)
     {
         foreach (var endpoint in this.endpoints)
         {
@@ -64,14 +64,17 @@ public class JsonABI
         return null;
     }
 
-    public TypeStruct GetType(string name)
+    public SCTypeStruct GetType(string name)
     {
+        if (this.types == null) {
+            return null;
+        }
 
         foreach (var type in this.types)
         {
             if (type.Key == name)
             {
-               return JsonConvert.DeserializeObject<TypeStruct>(type.Value.ToString());
+               return JsonConvert.DeserializeObject<SCTypeStruct>(type.Value.ToString());
             }
 
         }
@@ -79,9 +82,9 @@ public class JsonABI
     }
 
 
-    public Input GetEndpointOutput(string endpointName,string outputName)
+    public SCInput GetEndpointOutput(string endpointName,string outputName)
     {
-        var findedEndpoint = new Endpoint();
+        var findedEndpoint = new SCEndpoint();
 
         foreach (var endpoint in this.endpoints)
         {

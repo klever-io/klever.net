@@ -5,6 +5,8 @@ using System.Numerics;
 using System.Text;
 using System.Globalization;
 using System.Drawing;
+using System.IO;
+using System.Linq;
 
 namespace kleversdk.core.Helper
 {
@@ -155,7 +157,7 @@ namespace kleversdk.core.Helper
                 case "variadic":
                     return DecodeVariadic(abi, hex, tupleType.Item2);
                 default:
-                    TypeStruct typeStruct = abi.GetType(type);
+                    SCTypeStruct typeStruct = abi.GetType(type);
 
                     if(typeStruct == null)
                     {
@@ -190,12 +192,12 @@ namespace kleversdk.core.Helper
             return SelectDecoder(abi, hex, type, false);
         }
 
-        private static Tuple<List<object>,string> DecodeStruct(JsonABI abi, string hex, TypeStruct typeStruct)
+        private static Tuple<List<object>,string> DecodeStruct(JsonABI abi, string hex, SCTypeStruct typeStruct)
         {
             List<object> result = new List<object>();
 
 
-            foreach (Fields field in typeStruct.fields)
+            foreach (SCFields field in typeStruct.fields)
             {
                 if (field.type.StartsWith("List<"))
                 {
@@ -293,7 +295,7 @@ namespace kleversdk.core.Helper
                 return new DecodeResult(hex, decodedValue);
             }
 
-            TypeStruct typeStruct = abi.GetType(type);
+            SCTypeStruct typeStruct = abi.GetType(type);
 
             if (typeStruct == null)
             {
@@ -437,8 +439,6 @@ namespace kleversdk.core.Helper
 
             return new DecodeResult(newHex, bigIntegerParsed);
         }
-
-
 
         public static DecodeResult DecodeInt(string hex, int size, bool isNested = false)
         {
