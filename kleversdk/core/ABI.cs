@@ -13,10 +13,7 @@ namespace kleversdk.core
 		public ABI()
 		{
         }
-
-
-
-
+        
         public static JsonABI LoadABIByFile(string filepath)
         {
             string json = File.ReadAllText(filepath);
