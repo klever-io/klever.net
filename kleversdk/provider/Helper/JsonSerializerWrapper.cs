@@ -8,7 +8,7 @@ namespace kleversdk.provider.Helper
     {
         public static string Serialize(object value)
         {
-            var serializerSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, ContractResolver = new CamelCasePropertyNamesContractResolver() };
+            var serializerSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, ContractResolver = new CamelCasePropertyNamesContractResolver { NamingStrategy = null} };
             return JsonConvert.SerializeObject(value, serializerSettings);
         }
 
@@ -19,7 +19,7 @@ namespace kleversdk.provider.Helper
                 throw new ArgumentNullException(nameof(json));
             }
 
-            var serializerSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, ContractResolver = new CamelCasePropertyNamesContractResolver() };
+            var serializerSettings = new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore, ContractResolver = new CamelCasePropertyNamesContractResolver { NamingStrategy = null } };
             return JsonConvert.DeserializeObject<TValue>(json, serializerSettings);
         }
     }
