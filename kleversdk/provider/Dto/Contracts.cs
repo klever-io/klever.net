@@ -31,7 +31,7 @@ namespace kleversdk.provider.Dto
         TXContract_UpdateAccountPermissionContractType,
         TXContract_DepositContractType,
         TXContract_ITOTriggerContractType,
-        TXContract_SmartContractType = 99
+        TXContract_SmartContractType = 63
     }
 
     public class SendRequest
