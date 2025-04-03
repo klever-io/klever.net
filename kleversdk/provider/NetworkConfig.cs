@@ -17,18 +17,18 @@ namespace kleversdk.provider
             switch (network)
             {
                 case Network.MainNet:
-                    APIUri = new Uri("https://api.mainnet.klever.finance");
-                    NodeUri = new Uri("https://node.mainnet.klever.finance");
+                    APIUri = new Uri("https://api.mainnet.klever.org");
+                    NodeUri = new Uri("https://node.mainnet.klever.org");
                     ExplorerUri = new Uri("https://kleverscan.org/");
                     break;
                 case Network.TestNet:
-                    APIUri = new Uri("https://api.testnet.klever.finance");
-                    NodeUri = new Uri("https://node.testnet.klever.finance");
+                    APIUri = new Uri("https://api.testnet.klever.org");
+                    NodeUri = new Uri("https://node.testnet.klever.org");
                     ExplorerUri = new Uri("https://testnet.kleverscan.org/");
                     break;
                 case Network.DevNet:
-                    APIUri = new Uri("https://api.devnet.klever.finance");
-                    NodeUri = new Uri("https://node.devnet.klever.finance");
+                    APIUri = new Uri("https://api.devnet.klever.org");
+                    NodeUri = new Uri("https://node.devnet.klever.org");
                     ExplorerUri = new Uri("https://klever-explorer-oxw5p5ia3q-uc.a.run.app/");
                     break;
                 default:
