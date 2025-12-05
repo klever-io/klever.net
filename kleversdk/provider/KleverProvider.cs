@@ -323,6 +323,47 @@ namespace kleversdk.provider
             return await this.PrepareTransaction(data);
         }
 
+        public async Task<Transaction> MultiAssetTransfer(
+    string fromAddr,
+    long nonce,
+    List<MultiAssetTx> transfers,
+    string kdaFee = "",
+    byte[][] messageData = null,
+    long permID = 0)
+        {
+            var contracts = new List<IContract>();
+
+            for (int i = 0; i < transfers.Count; i++)
+            {
+                string kda = transfers[i].Asset.ToUpper();
+
+                // Convert amount with specified precision
+                // FIX: Cast Math.Pow to decimal
+                long parsedAmount = Convert.ToInt64(
+                    transfers[i].Amount * (decimal)Math.Pow(10, transfers[i].Precision)
+                );
+
+                // Add transfer contract
+                contracts.Add(new TransferContract(
+                    transfers[i].Address,
+                    parsedAmount,
+                    kda
+                ));
+            }
+
+            // Build request with all contracts
+            var data = BuildRequest(
+                TXContract_ContractType.TXContract_TransferContractType,
+                fromAddr,
+                nonce,
+                contracts,
+                messageData,
+                kdaFee,
+                permID
+            );
+
+            return await PrepareTransaction(data);
+        }
         public SendRequest BuildRequest(TXContract_ContractType cType, string fromAddress, long nonce, List<IContract> contracts, byte[][] message = null, string kdaFee = "", long permID = 0)
         {
             if (contracts.Count == 0 || contracts.Count > 20)
@@ -370,7 +411,7 @@ namespace kleversdk.provider
 
         public async Task<BroadcastResult> Broadcast(Transaction tx)
         {
-            var data = new ToBoradcast { Tx = tx }.String();
+            var data = new ToBroadcast { Tx = tx }.String();
             var dataContent = new StringContent(data, Encoding.UTF8, "application/json");
             var response = await _nodeClient.PostAsync($"transaction/broadcast", dataContent);
 

@@ -17,6 +17,7 @@ namespace kleversdk.provider
         Task<TransactionAPI> Decode(Transaction tx);
         Task<Transaction> Send(string fromAddr, long nonce, string toAddr, float amount, string kda = "KLV", string kdaFee = "", long permID = 0);
         Task<Transaction> SendWithMessage(string fromAddr, long nonce, string toAddr, float amount, string message, string kda = "KLV", string kdaFee = "", long permID = 0);
+        Task<Transaction> MultiAssetTransfer(string fromAddr,long nonce,List<MultiAssetTx> transfers,string kdaFee = "",byte[][] messageData = null, long permID = 0);
         Task<provider.Dto.Transaction> Claim(string fromAddr, long nonce, int claimType, string id = "KLV", string kdaFee = "", long permID = 0);
         Task<provider.Dto.Transaction> Freeze(string fromAddr, long nonce, float Amount, string kda = "KLV", string kdaFee = "", long permID = 0);
         Task<provider.Dto.Transaction> Unfreeze(string fromAddr, long nonce, string BucketID, string kda = "KLV", string kdaFee = "", long permID = 0);
