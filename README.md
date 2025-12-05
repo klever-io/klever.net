@@ -47,3 +47,21 @@ Console.WriteLine($"Broadcast result: {broadcastResult.String()}");
 ## Examples
 
 The [`demo`](demo/) directory provides runnable examples that demonstrate how to use the Klever .NET SDK for different blockchain operations. Here are some of the included examples:
+
+---
+
+## Contributing
+
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for details on:
+
+- Setting up your development environment
+- Submitting issues and pull requests
+- Code style guidelines
+
+## Code Style
+
+This project follows [Microsoft C# Coding Conventions](https://learn.microsoft.com/en-us/dotnet/csharp/fundamentals/coding-style/coding-conventions). See [CODE_STYLE.md](CODE_STYLE.md) for project-specific guidelines.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
