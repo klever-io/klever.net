@@ -129,6 +129,49 @@ namespace demo
 
         }
 
+        public static async Task MultiAssetTransferDemo()
+        {
+            Console.WriteLine("MultiAssetTransfer Demo");
+
+            var kp = new KleverProvider(new NetworkConfig(Network.TestNet));
+            var wallet = new Wallet("hex-private-key");
+            var acc = wallet.GetAccount();
+
+            try
+            {
+                await acc.Sync(kp);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("account does not exist in blockchain yet: {0}", e.ToString());
+                return;
+            }
+
+            Console.WriteLine("Address: {0}", acc.Address.Bech32);
+            Console.WriteLine("Balance: {0}", acc.Balance);
+
+            // Send 2 different assets in one transaction
+            var transfers = new List<MultiAssetTx>
+            {
+                new MultiAssetTx("klv1receiver1...", 100m, "KLV", 6),
+                new MultiAssetTx("klv1receiver2...", 50m, "KFI", 6)
+            };
+
+            try
+            {
+                var tx = await kp.MultiAssetTransfer(acc.Address.Bech32, acc.Nonce, transfers);
+                var decoded = await kp.Decode(tx);
+                var signature = wallet.SignHex(decoded.Hash);
+                tx.AddSignature(signature);
+                var broadcastResult = await kp.Broadcast(tx);
+                Console.WriteLine("Broadcast result: {0}", broadcastResult.String());
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Error sending: {0}", e.ToString());
+                return;
+            }
+        }
         public static async Task Main(string[] args)
         {
 

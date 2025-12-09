@@ -66,7 +66,7 @@ namespace kleversdk.provider.Dto
         public Transaction Result { get; set; }
     }
 
-    public class ToBoradcast
+    public class ToBroadcast
     {
         public Transaction Tx { get; set; }
 
