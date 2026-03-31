@@ -7,7 +7,6 @@ using kleversdk.core.Helper;
 using Newtonsoft.Json.Linq;
 using Xunit;
 using System.Linq;
-using Org.BouncyCastle.Math.EC.Multiplier;
 
 namespace kleversdk.Tests.coreTests
 {
