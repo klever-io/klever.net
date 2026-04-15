@@ -143,8 +143,47 @@ dotnet test --filter "FullyQualifiedName~ABITests"
 
 - Use xUnit framework
 - Place tests in `kleversdk.Tests/`
+  - `coreTests/` — wallet, ABI encoding/decoding, crypto helpers
+  - `providerTests/` — `KleverProvider` and DTOs
 - Follow the naming convention: `MethodName_Scenario_ExpectedResult`
 - Include both positive and negative test cases
+
+### Mocking HTTP in Provider Tests
+
+`KleverProvider` exposes a second constructor that accepts injected `HttpClient` instances:
+
+```csharp
+public KleverProvider(HttpClient nodeClient, HttpClient apiClient)
+```
+
+Use the `MockHttpMessageHandler` helper (defined in `providerTests/KleverProviderTests.cs`) to intercept HTTP calls without hitting real endpoints:
+
+```csharp
+// 1. Prepare the response your code expects to receive
+var mockResponse = new HttpResponseMessage(HttpStatusCode.OK)
+{
+    Content = new StringContent(
+        """{"data":{"result":{}},"error":"","code":"successful"}""",
+        Encoding.UTF8, "application/json")
+};
+
+// 2. Wrap it in a handler that also captures the outgoing request body
+var nodeHandler = new MockHttpMessageHandler(mockResponse);
+var nodeClient  = new HttpClient(nodeHandler) { BaseAddress = new Uri("http://node.test/") };
+
+// 3. Inject into the provider
+var provider = new KleverProvider(nodeClient: nodeClient, apiClient: new HttpClient());
+
+// 4. Exercise the code under test
+await provider.MultiAssetTransfer("sender", 1, transfers);
+
+// 5. Assert on the serialized request that was sent to the node
+Assert.Contains("\"Amount\":1000000", nodeHandler.CapturedRequestBodies[0]);
+```
+
+**Important serialization note:** `JsonSerializerWrapper` uses `NamingStrategy = null`, which
+produces **PascalCase** property names in the outgoing JSON (e.g. `"Amount"`, `"Receiver"`,
+`"Kda"`). Write your `Assert.Contains` checks accordingly.
 
 ### Test Coverage
 

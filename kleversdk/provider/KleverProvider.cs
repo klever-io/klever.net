@@ -28,6 +28,16 @@ namespace kleversdk.provider
             }
         }
 
+        /// <summary>
+        /// Constructor for unit testing: injects pre-configured HttpClient instances
+        /// so tests can supply a custom HttpMessageHandler without hitting real endpoints.
+        /// </summary>
+        public KleverProvider(HttpClient nodeClient, HttpClient apiClient)
+        {
+            _nodeClient = nodeClient;
+            _apiClient = apiClient;
+        }
+
         private byte[][] EncodeMessage(string message)
         {
 
